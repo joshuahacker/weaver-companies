@@ -1,0 +1,8 @@
+# Ignore all files with the .txt extension
+*.txt
+
+# Ignore a specific folder and its contents
+src/FileCabinet/SuiteScripts/Test/
+
+# Ignore a specific file
+path/to/file.js
