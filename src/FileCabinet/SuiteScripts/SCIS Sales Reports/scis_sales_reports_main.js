@@ -16,6 +16,7 @@ define([
         ){
 
      function onRequest(context) {
+        if (context.request.method === 'GET') {
 // Create the Suitelet form
         var form = serverWidget.createForm({
             title: 'Nearest Green Distillery - Retail Sales'
@@ -35,6 +36,7 @@ define([
 // Function to Create All Sublists 
        
 createAllSublists.createAllSublists(form);
+
     
       // Add the date filter fields to the form
       var dateFieldGroup = form.addFieldGroup({
@@ -44,7 +46,7 @@ createAllSublists.createAllSublists(form);
     });
 
     var fromDateField = form.addField({
-        id: 'custpage_from_date',
+        id: 'custpage_date_from',
         type: serverWidget.FieldType.DATE,
         label: 'From Date',
         container: 'custpage_date_group'
@@ -58,7 +60,7 @@ createAllSublists.createAllSublists(form);
     });
 
     var toDateField = form.addField({
-        id: 'custpage_to_date',
+        id: 'custpage_date_to',
         type: serverWidget.FieldType.DATE,
         label: 'To Date',
         container: 'custpage_date_group'
@@ -84,29 +86,46 @@ createAllSublists.createAllSublists(form);
                     height: 100,
                     width: 100
             }).updateLayoutType({
-                    layoutType: serverWidget.FieldLayoutType.ENDROW
-            }).updateBreakType({
-                    breakType: serverWidget.FieldBreakType.STARTCOL
+                    layoutType: serverWidget.FieldLayoutType.MIDROW
             });
 
             var buttonField = form.addField({
                 id: 'custpage_button_field',
                 type: serverWidget.FieldType.INLINEHTML,
-                label: 'Button',
-                container: 'custpage_date_group',
-                
+                label: 'button',
+                container: 'custpage_date_group'
             });
-            buttonField
-            .updateLayoutType({
-                layoutType: serverWidget.FieldLayoutType.ENDROW
-            })
+    
+            buttonField.defaultValue =
+                '<input id="custpage_applyFilter" onclick="applyFilter" type="button" name="applyFilter" value="Search" style="width:110px; height:30px; margin-top:5px; margin-left: 10px; cursor: pointer; background-color:#378FFA; border:1px solid #9DBFF2; color:#FFFFFF; font-weight: bold;">';
+    
+            buttonField.updateLayoutType({
+                layoutType: serverWidget.FieldLayoutType.MIDROW
+            });
+    
+            form.clientScriptModulePath = './scis_cs_datefilter.js';
+
+            context.response.writePage(form);
+    
             
-            buttonField.defaultValue = '<input type="button" value="Dummy Button" onclick="myButtonClick()" style="margin-left: 5px;">'
+        } else if (context.request.method === 'POST') {
+            // Handle the POST request with the parameters
+            var params = context.request.parameters;
             
-// Send the response
-        context.response.writePage(form);
+            // Perform your logic with the parameters here
+            
+            // Create the response
+            var response = {
+                message: 'Parameters received',
+                params: params
+            };
+            
+            // Send the response as JSON
+            context.response.write(JSON.stringify(response));
+        }
     }
 
+      
     return {
         onRequest: onRequest
     };
