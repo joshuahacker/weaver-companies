@@ -1,12 +1,16 @@
 /**
+ * @NApiVersion 2.x
  * @NScriptType Suitelet
- * 
+ * @NModuleScope SameAccount
  * @by Joshua Hacker
  * @Description Sublist View for All Transactions Search
  */
 
 define(['N/ui/serverWidget', 'N/log', 'N/search'], function(serverWidget, log, search) {
-function runAllTransactions() {
+function onRequest(context) {
+
+    
+    function runAllTransactions() {
 // Create search columns for summary
     function runSalesSearch() { 
         
