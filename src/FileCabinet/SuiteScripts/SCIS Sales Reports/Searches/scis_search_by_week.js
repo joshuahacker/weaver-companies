@@ -1,5 +1,5 @@
-define(['N/search', 'N/log'], function(search, log) {
-    function runSalesSearch() {        
+define(['N/search', 'N/log', 'N/format'], function(search, log, format) {
+    function runSalesSearch(dateFilter) {        
            // Create search columns for summary
             var summaryColumns =  [
                 search.createColumn({
@@ -81,14 +81,70 @@ define(['N/search', 'N/log'], function(search, log) {
                     "AND", 
                     ["formulatext: CASE WHEN {entity} LIKE '%ipad%' OR {entity} LIKE '%golf club%' THEN {entity} ELSE '' END","is",""]
                 ],
-                columns: summaryColumns
+
+                columns: summaryColumns  
             });
-            
+0
+      
+            // Format the dates in "MM/dd/yy" format
+var formatDate = function(date) {
+   var month = date.getMonth() + 1;
+   var day = date.getDate();
+   var year = date.getFullYear();
+   return ('00' + month).slice(-2) + '/' + ('00' + day).slice(-2) + '/' + ('' + year).slice(-2);
+};
+
+if (dateFilter && dateFilter.fromDate && dateFilter.toDate) {
+   var dateFilterColumn = search.createColumn({
+     name: "trandate",
+     summary: "GROUP",
+     function: "weekOfYear",
+     sort: search.Sort.DESC,
+     label: "Date"
+   });
+
+   var formattedFromDate = formatDate(fromDate);
+    var formattedToDate = formatDate(toDate);
+      
+   // Add the logical operator 'AND' and date filter conditions to the filters
+   salesSearch.filters.push(search.createFilter({
+     name: 'trandate',
+     operator: search.Operator.WITHIN,
+     values: [formattedFromDate, formattedToDate]
+   }));
+ } else {
+   // Set a default date range if no date filter is provided
+   var defaultFromDate = new Date();
+   defaultFromDate.setDate(defaultFromDate.getDate() - 30);
+
+   var formattedDefaultFromDate = formatDate(defaultFromDate);
+   var formattedDefaultToDate = formatDate(new Date());
+   
+   var dateFilterColumn = search.createColumn({
+     name: "trandate",
+     summary: "GROUP",
+     function: "weekOfYear",
+     sort: search.Sort.DESC,
+     label: "Date"
+   });
+   
+   // Add the default date filter conditions to the filters using 'AND'
+   salesSearch.filters.push(search.createFilter({
+     name: 'trandate',
+     operator: search.Operator.WITHIN,
+     values: [formattedDefaultFromDate, formattedDefaultToDate]
+   }));
+ }
+
+ log.debug(formattedToDate, formattedFromDate)
+
             log.audit({ title: 'Sales By Week Search: Search Created' });
   
             // Run the search and retrieve the results
-            var resultSet = salesSearch.run();
             var summaryResults = [];
+            var resultSet = salesSearch.run();
+
+            var pageSize = 1000; // Adjust this to the appropriate page size
   
             resultSet.each(function(result) {
                 var date = result.getValue(summaryColumns[0]);

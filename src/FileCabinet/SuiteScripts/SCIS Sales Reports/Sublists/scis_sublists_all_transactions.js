@@ -7,19 +7,7 @@
 
 define(['N/ui/serverWidget', 'N/log', '../Searches/scis_search_all_transactions.js'], function(serverWidget, log, searchByAllTransactions) {
     function createSublist(form) {
-
-        var filtersForm = serverWidget.createForm({
-            title: 'Filter by Date',
-            hideNavBar: true
-        });
-
-        var fromDateField = filtersForm.addField ({
-            id: 'custpage_from_date',
-            type: 'serverWidget.FieldType.DATE',
-            tab: 'custpage_reports_date_tab',
-        })
-
-
+        
         var resultSet = searchByAllTransactions.runSalesSearch();
        
  // SCIS Sales Sublist 

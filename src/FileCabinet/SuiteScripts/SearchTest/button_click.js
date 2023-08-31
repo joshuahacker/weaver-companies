@@ -4,7 +4,7 @@
  * @NModuleScope SameAccount
  */
 
-define(['N/url'], function (url) {
+define(['N/url', 'N/log'], function (url, log) {
 
     function pageInit() {
         console.log('Page Initialized');
@@ -22,6 +22,9 @@ define(['N/url'], function (url) {
                 custpage_from_date: dateFrom, 
                 custpage_to_date: dateTo
             };
+
+            log.debug({params})
+
             console.log('Page Here');
             var suiteletURL = url.resolveScript({
                 scriptId: 'customscript_filters_test',
