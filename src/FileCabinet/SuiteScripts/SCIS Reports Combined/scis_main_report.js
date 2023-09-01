@@ -70,6 +70,7 @@ define(['N/ui/serverWidget', 'N/search', 'N/log', 'N/format'], function(serverWi
 
       // Add the date filter conditions to the filters
       if (dateFilter && dateFilter.fromDate && dateFilter.toDate) {
+        log.debug(dateFilter.fromDate)
         salesSearch.filters.push(search.createFilter({
           name: 'trandate',
           operator: search.Operator.WITHIN,
@@ -78,6 +79,7 @@ define(['N/ui/serverWidget', 'N/search', 'N/log', 'N/format'], function(serverWi
       } else {
         // Set a default date range if no date filter is provided
         var defaultFromDate = new Date();
+        log.debug(defaultFromDate)
         defaultFromDate.setDate(defaultFromDate.getDate() - 30);
         salesSearch.filters.push(search.createFilter({
             name: 'trandate',
@@ -85,6 +87,8 @@ define(['N/ui/serverWidget', 'N/search', 'N/log', 'N/format'], function(serverWi
             values: [formatDate(defaultFromDate), formatDate(new Date())]
           }));
         }
+
+        log.debug(defaultFromDate)
       
         // Run the sales search
         var searchResults = salesSearch.run();
