@@ -56,6 +56,7 @@ define(['N/search', 'N/ui/serverWidget', 'N/log'], function(search, serverWidget
 
         return list;
     }
+    
     function findTrans() {
         log.audit({title: 'Finding Transactions...'});
 

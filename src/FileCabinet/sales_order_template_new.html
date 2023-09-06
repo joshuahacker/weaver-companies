@@ -1,0 +1,281 @@
+<?xml version="1.0"?>
+<!DOCTYPE pdf PUBLIC "-//big.faceless.org//report" "report-1.1.dtd">
+<pdf>
+<head>
+  		<link name="verdana" type="font" subtype="opentype" src="${nsfont.verdana}" src-bold="${nsfont.verdana_bold}" bytes="2"></link>
+   <macrolist>
+    <macro id="nlfooter">
+      <div>
+        <div class="footeraddress" align="center">
+          <table class="footeraddress" width="100%">
+    <tr>
+      <td align="center"><span>Nearest Green Distillery<br /> 3125 US-231<br />Shelbyville, TN 37160</span>
+      </td> </tr>
+      </table>
+        </div>
+      </div>
+      <hr />
+        </macro>
+</macrolist>
+    <style type="text/css">
+  <!-- table, th, td, tr {
+      border: 1px solid;
+    } -->
+	.potemplate {
+        size: letter;
+		font-family: verdana, sans serif;
+	}
+	.header_info {
+      	padding: 5px 5px 5px 5px;
+     	width: 80%;
+      border: 1px solid #DCDCDC;
+	}
+   table.header_info td {
+    	width: 100%;
+     	padding: 5px 6px 3px 5px;
+     font-size: 10pt;
+     font-weight: bold;
+     padding-bottom: 25px;
+      }
+   table.header_info th {
+   		width: 100%;
+     	padding: 5px 6px 3px 5px;
+     font-size: 9pt;
+     padding-top: 25px;
+     
+      }
+	.contact_details {
+        margin-top: 10px;
+        padding: 0px 4px 0px 4px;
+        width: 100%;
+        font-size: 12px;
+	}
+	.contact_details_header {
+        font-size: 7pt;
+        background-color: #DEDEDE;
+        border: 1px solid #DCDCDC;
+        padding-top: 6px;
+        padding-bottom: 2px;
+	}
+	.contact_details_address {
+      	padding: 5px 5px 5px 5px;
+      	background-color: #FFFFFF;
+     	border: 1px solid #DCDCDC;
+      	font-size: 11px;
+	}
+	table.details th {
+        font-weight: bold;
+        font-size: 8pt;
+        vertical-align: middle;
+        padding: 5px 6px 3px 5px;
+        background-color: #e3e3e3;
+        border: 1px solid #DCDCDC;
+        color: #333333;
+      }
+	.record_details {
+ 		color: #333333;
+		border: 1px solid #DCDCDC;
+		text-align: center;
+		font-size: 11px;
+	}
+	span.number {
+   		font-size: 12pt;
+	}
+	span.itemname {
+   		font-weight: bold;
+   		line-height: 150%;
+	}
+	hr {
+   		width: 100%;
+   		color: #595959;
+   		background-color: #d3d3d3;
+   		height: 1px;
+	}
+	table.total {
+   		page-break-inside: avoid;
+      	font-size: 11px;
+	}
+	tr.totalrow {
+        background-color: #e3e3e3;
+        line-height: 165%;
+
+   	}
+	td.totalboxbot {
+        background-color: #521A0E;
+        font-weight: bold;
+     	color: #595959;
+	}
+    table.itemtable {
+        font-size: 12px;
+    }
+	table.itemtable th {
+     	font-weight: bold;
+      	font-size: 8pt;
+      	vertical-align: middle;
+     	text-align: center;
+      	background-color: #e3e3e3;
+     	padding-bottom: 5px;
+      	padding-top: 5px;
+    	margin-top: 10px;
+	}
+	table.itemtable td {
+   		border-left: 1px solid #DCDCDC;
+     	border-right: 1px solid #DCDCDC;
+        border-bottom: 1px solid #DCDCDC;
+     	padding-bottom: 10px;
+    	padding-top: 10px;
+      	font-size: 9pt;
+     	color: #595959;
+	}
+    .footeraddress {
+      display: flex;
+      font-size: 9px;
+      text-align: center;
+      padding-left: 1px;
+      color: #595959;
+    }
+  </style>
+</head>
+<body class="potemplate" footer="nlfooter">
+  <div width="200" height="140">
+    <div id="record_title" width="100%" align="right" position="absolute" x="222%" >
+      <span style="font-size: 28px; font-weight: 600px;">${record@title}</span>
+    </div>
+  	<div id="form_header" position="absolute" x="125%" y="35%" width="180%">
+    <table class="header_info">
+      <tr >
+      </tr>
+      <tr >
+		<th background="#f2f2f2" align="center">SALES ORDER #</th>
+     	<th background="#7f7f7f" color="#FFFFFF" align="center">AMOUNT</th>
+        <th background="#f2f2f2" align="center">DATE</th>
+      </tr>
+      <tr>
+        <td background="#f2f2f2" color="#666669" align="center">${record.tranid}</td>
+        <td background="#7f7f7f" color="#FFFFFF" align="center">${record.total}</td>
+        <td background="#f2f2f2" color="#666669" align="center">${record.trandate}</td>
+      </tr>
+      <tr>
+      </tr>
+    </table>
+    </div>
+  	<div id="logo" position="absolute" x="20%" y="1%" height="100%" width="33%">
+      <#if companyInformation.logoUrl?length != 0><img height="175px" src="${companyInformation.logoUrl}" vertical-align="top" width="175px" /></#if>
+  	</div>
+  </div>
+  <div padding="10px">
+  </div>
+<table class="contact_details">
+  <#if (record.billaddress?length > 0 && record.shipaddress?length > 0)>
+	<tr>
+      	<td rowspan="5" style="background-color: #FFFFFF; padding: 5px 1px 5px 1px;"></td>
+    <td class="contact_details_header" colspan="2"><b>${record.billaddress@label?upper_case}</b></td>
+     	<td rowspan="5" style="background-color: #FFFFFF; padding: 5px 13px 5px 13px;"></td>
+		<td class="contact_details_header" colspan="2"><b>${record.shipaddress@label?upper_case}</b></td>
+     	<td rowspan="5" style="background-color: #FFFFFF; padding: 5px 1px 5px 1px;"></td>
+	</tr>
+	<tr>
+		<td class="contact_details_address" colspan="2" rowspan="2">${record.billaddress}</td>
+		<td class="contact_details_address" colspan="2" rowspan="2">${record.shipaddress}</td>
+	</tr>
+ <#elseif (record.shipaddress?length > 0 ) >
+   <tr>
+		<th class="contact_details_header" width="38%" style="border: 0px;" padding-left="5px"><b>${record.shipaddress@label?upper_case}</b></th>
+     	<td style="background-color: #FFFFFF; padding: 2px 1px 5px 1px;"></td>
+	</tr>
+	<tr>
+      	<td class="contact_details_address" width="38%">${record.shipaddress}</td>
+		<td style="background-color: #FFFFFF; padding: 2px 1px 5px 1px;"></td>
+   </tr>
+   <#elseif (record.billaddress?length > 0) >
+      <tr>
+		<th class="contact_details_header" width="38%" style="border: 0px " padding-left="5px"><b>${record.billaddress@label?upper_case}</b></th>
+     	<td style="background-color: #FFFFFF; padding: 2px 1px 5px 1px;"></td>
+	</tr>
+	<tr>
+      	<td class="contact_details_address" width="38%">${record.billaddress}</td>
+		<td style="background-color: #FFFFFF; padding: 2px 1px 5px 1px;"></td>
+     </tr>
+       <#else>
+    <tr>
+        <td class="contact_details_header" width="38%" style="font-size: 11px; background-color: #f2f2f2"><b>Bill To: ${record.entity?substring(3)}</b>
+</td>
+      <td style="background-color: #FFFFFF; padding: 1px 1px 1px 1px;" colspan="5"></td>
+      <td style="background-color: #FFFFFF; padding: 2px 1px 5px 1px;" colspan="4"></td>
+       <td style="background-color: #FFFFFF; padding: 2px 1px 5px 1px;" colspan="4"></td>
+      <td style="background-color: #FFFFFF; padding: 2px 1px 5px 1px;" colspan="4"></td>
+    </tr>
+         </#if>
+</table>
+<table class="details" style="width: 100%; margin-top: 10px;">
+  <thead>
+  	<tr>
+      	<th>${record.memo@label}</th>
+        <th>${record.salesrep@label}</th>
+		<th>${record.terms@label}</th>
+		<th>${record.otherrefnum@label}</th>
+	</tr>
+    </thead>
+	<tr>
+      	<td class="record_details">${record.memo}</td>
+      	<td class="record_details">${record.salesrep}</td>
+		<td class="record_details">${record.terms}</td>
+		<td class="record_details">${record.otherrefnum}</td>
+	</tr>
+</table>
+  <#if record.item?has_content>
+<table class="itemtable" style="width: 100%;">
+  <!-- start items -->
+  <#list record.item as item><#if item_index==0>
+<thead>
+	<tr>
+		<th colspan="12" padding-left="1px"><span padding-left="1px">${item.item@label?upper_case}</span></th>
+    	<th align="center" colspan="4">${item.quantity@label?upper_case}</th>
+		<th align="center" colspan="4">${item.rate@label?upper_case}</th>
+		<th align="center" colspan="4">${item.amount@label?upper_case}</th>
+	</tr>
+</thead>
+</#if>
+    <tr style="background-color: ${((item_index % 2) ==0)?string('#ffffff', '#f0f0f0')};">
+		<td colspan="12"><span class="itemname">${item.item}</span><br />${item.description}</td>
+    	<td align="center" colspan="4" line-height="150%; padding: 0px 0px 5px 0px">${item.quantity}</td>
+		<td align="center" colspan="4">${item.rate}</td>
+		<td align="center" colspan="4">${item.amount}</td>
+	</tr>
+	</#list>
+  <!-- end items -->
+</table>
+<hr /></#if>
+  <div>
+   <div>
+   <table class="total" style="width: 100%;">
+	<tr>
+      <td background-color="#ffffff" colspan="7">&nbsp;</td>
+		<td colspan="7" rowspan="2">
+          <#if (record.custbody_solupaysp_oauth_token?length >0)>
+     
+<!--Solupay Pay Link--><span style="color: #FFFFFF"><#assign paylink>https://go.solupay.com/myportal/invoice?ver=2&amp;invoiceId=${record.id}&amp;tranId=${record.tranid}&amp;companyId=${companyInformation.companyid}&amp;total=${record.total}&amp;token=${record.custbody_solupaysp_oauth_token}</#assign></span> <table align="right"><tr><td><a href="${paylink}"><img height="55" href="${paylink}" src="http://tstdrv1472101.shop.netsuite.com/core/media/media.nl?id=46630&amp;c=TSTDRV1472101&amp;h=f3f77898966c42569fd3" width="164" /></a></td></tr></table><!--End Solupay Pay Link--></#if>
+      </td>
+		<td background-color="#ffffff" colspan="7">&nbsp;</td>
+      <td align="right"><b>${record.subtotal@label}</b></td>
+		<td align="right">${record.subtotal}</td>
+	</tr>
+	<tr>
+      	<td background-color="#ffffff" colspan="7">&nbsp;</td>
+		<td background-color="#ffffff" colspan="7">&nbsp;</td>
+		<td align="right"><b>${record.taxtotal@label} (${record.taxrate}%)</b></td>
+		<td align="right">${record.taxtotal}</td>
+	</tr>
+	<tr class="totalrow">
+     	 <td background-color="#ffffff" colspan="7">&nbsp;</td>
+		<td background-color="#ffffff" colspan="7">&nbsp;</td>
+      <td background-color="#ffffff" colspan="7">&nbsp;</td>
+		<td align="right"><b>${record.total@label}</b></td>
+		<td align="right">${record.total}</td>
+	</tr>
+  </table>
+    </div>
+  </div>
+  <hr />
+  </body>
+</pdf>

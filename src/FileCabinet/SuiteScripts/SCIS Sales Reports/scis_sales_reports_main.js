@@ -7,7 +7,7 @@
 define([
     'N/ui/serverWidget', 
     'N/log', 
-    './Sublists/scis_create_sublists.js',
+    './create_sublists.js',
     ], 
     function(
         serverWidget, 
