@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Task & Help Requests</title>
+
+    <style>
+        .form_body {
+            display: inline-flex;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            margin: auto;
+            padding: 0;
+            font-size: 13px;
+            color: #444444;
+            font-family: "Open Sans", Helvetica, sans-serif;
+            font-weight: 400px;
+        }
+
+        .form_body.div {
+            width: calc(100% - 15px);
+            height: 50px;
+            color: #444444;
+        }
+
+        .form_header {
+            padding: 10px 0;
+            font-size: 32px;
+            font-weight: 300;
+            text-align: center;
+        }
+
+        .form_main {
+            max-width: 340px;
+            min-height: 460px;
+            padding: 10px 10px;
+            margin: auto;
+            text-align: center;
+            border-radius: 5px;
+            box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.31);
+            background: #edf1f1f3;
+            border: none !important;
+        }
+
+        input[type="radio"] {
+            display: none;
+        }
+
+        label.radio {
+            position: relative;
+            display: inline-block;
+            text-align: center;
+            padding-top: 4px;
+            margin-right: 10px;
+            font-size: 13px;
+            text-indent: 30px;
+            overflow: visible;
+            cursor: pointer;
+            color: #444444;
+        }
+
+        label.radio:before {
+            content: "";
+            position: absolute;
+            text-align: center;
+            top: 2px;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #292929;
+        }
+
+        label.radio:after {
+            content: "";
+            position: absolute;
+            text-align: center;
+            width: 9px;
+            height: 4px;
+            top: 8px;
+            left: 4px;
+            border: 3px solid #fff;
+            border-top: none;
+            border-right: none;
+            transform: rotate(-45deg);
+            opacity: 0;
+        }
+
+        input[type="radio"]:checked+label:after {
+            opacity: 1;
+            text-align: center;
+        }
+
+        .form_input {
+            display: inline-flex;
+            width: calc(100% - 57px);
+            height: 36px;
+            padding: 7px;
+            margin-left: 3px;
+            border-radius: 5px;
+            box-shadow: 1px 2px 3px rgba(185, 184, 184, 0.09);
+            background: #fff;
+            font-size: 13px;
+            color: #444444;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .form_input.description {
+            display: inline-flex;
+            vertical-align: top;
+            flex-direction: row;
+            height: 50px;
+        }
+
+        #icon {
+            display: inline-flex;
+            padding: 4px;
+            box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.09);
+            color: #5f5858;
+            text-align: center;
+            vertical-align: center;
+            font-size: 20px;
+            width: 40px;
+            height: 34px;
+            border-radius: 10%;
+        }
+
+        .btn-block {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        button {
+            width: 250px;
+            padding: 10px 0;
+            margin: 10px auto;
+            border-radius: 5px;
+            border: none;
+            background: #a18d8d;
+            font-weight: bold;
+            font-size: 15px;
+            color: #fff;
+        }
+
+        button:hover {
+            background: #1d1c1c;
+        }
+    </style>
+</head>
+
+<body class="form_body">
+    <script src="https://kit.fontawesome.com/ca67ef7f7d.js" crossorigin="anonymous"></script>
+    <div class="form_main">
+        <h1 class="form_header">Help & Task Request Form</h1>
+        <form method="post" enctype="multipart/form-data" action="">
+            <div class="form_body div">
+                <label id="icon" for="email"><i class="fa-solid fa-folder-open"></i></label>
+
+                <input style="padding: 7px" class="form_input" type="text" name="email" id="email"
+                    placeholder="Email" />
+            </div>
+
+            <div class="form_body div">
+                <label id="icon" for="name"><i id="icons" class="fa-solid fa-user"></i></label>
+
+                <input style="padding: 7px" class="form_input" type="text" name="name" id="name" placeholder="Name" />
+            </div>
+            <div class="form_body div" style="margin-bottom: 12px">
+                <label style="margin-top: 7px" id="icon" for="description"><i class="fa-solid fa-clipboard"></i></label>
+                <textarea style="border: none" class="form_input description" type="textarea" id="description"
+                    name="description" placeholder="Description"></textarea>
+            </div>
+            <div class="form_body div">
+                <label id="icon" for="department"><i class="fa-solid fa-building-user"></i></label>
+                <select class="form_input" id="department" name="department">
+                    <option value="accounting">Accounting</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="retail">Retail & SCIS</option>
+                    <option value="general help">General Help</option>
+                    <option value="department_type">General Tasks</option>
+                    <option value="department_type">Operations</option>
+                </select>
+            </div>
+            <div class="form_body div">
+                <label id="icon" for="attachment"><span class="fas fa-file" id="icons"></span></label>
+                <input class="form_input" type="file" id="attachment" placeholder="Attachments" />
+            </div>
+            <div class="radio" style="text-align: center">
+                <input type="radio" value="none" id="low" name="priority" checked />
+                <label for="low" class="radio">Low</label>
+                <input type="radio" value="none" id="medium" name="priority" />
+                <label for="medium" class="radio">Medium</label>
+                <input type="radio" value="none" id="high" name="priority" />
+                <label for="high" class="radio">High</label>
+            </div>
+            <div class="btn-block">
+                <button type="submit" href="/">Submit</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>
