@@ -121,7 +121,7 @@ define(["N/ui/serverWidget", "N/file", "N/log", "N/https"], function (
         // Successfully Submitted Alert and Redirect
         var html = "<html><body>";
         html += '<script type="text/javascript">';
-        html += 'alert("Your form has been successfully submitted. For multiple files, email netsuiteadmin@unclenearest.com");';
+        html += 'alert("Form submitted successfully with an uploaded file. If you have multiple files, please email files to netsuiteadmin@unclenearest.com");';
         html += 'window.location.href = "/app/center/card.nl?sc=-29&whence=";';
         html += "</script>";
         html += "</body></html>";
@@ -136,11 +136,11 @@ define(["N/ui/serverWidget", "N/file", "N/log", "N/https"], function (
         // Error Submitted Alert and Redirect
         var html = "<html><body>";
         html += '<script type="text/javascript">';
-        html += 'alert("Error submitting files. Please email files to netsuiteadmin@unclenearest.com");';
+        html += 'alert("Form submitted successfully without an uploaded file. If you have multiple files, please email files to netsuiteadmin@unclenearest.com");';
         html += 'window.location.href = "/app/center/card.nl?sc=-29&whence=";';
         html += "</script>";
         html += "</body></html>";
-
+        
         context.response.write(html);
       }
     }
