@@ -136,6 +136,15 @@
             background: #0055CC;
         }
     </style>
+    <script>
+          // date
+    var today = new Date();
+    var yyyy = today.getFullYear().toString();
+    var yy = yyyy.substr(-2);  // Get last two digits of the year
+    var mm = String(today.getMonth() + 1).padStart(2, '0');  // Month is 0-based
+    var dd = String(today.getDate()).padStart(2, '0');
+    var formattedDate = mm + '/' + dd + '/' + yy;
+    </script>
 </head>
 
 <body class="form_body">
@@ -145,6 +154,12 @@
       -->       
       <form method="post" id="requestform" enctype="multipart/form-data" action="/app/site/hosting/scriptlet.nl?script=1414&deploy=1">
         <div class="form_body div">
+            <!-- Hidden date field -->
+                <input type="hidden" id="date" name="date" value=""/>
+                <script>
+                    // Populate the hidden date field
+                    document.getElementById("date").value = formattedDate;
+                </script>
                 <input style="padding: 7px" class="form_input" type="text" name="email" id="email" placeholder="EMAIL" />
             </div>
             <div class="form_body div">
@@ -158,8 +173,9 @@
                     <option value="Accounting">ACCOUNTING</option>
                     <option value="Marketing">MARKETING</option>
                     <option value="Retail / SCIS">RETAIL & SCIS</option>
-                    <option value="General Help">GENERAL HELP</option>
-                    <option value="General Tasks">GENERAL TASKS</option>
+                    <option value="Help">HELP</option>
+                    <option value="Tasks">TASK</option>
+                    <option value="Errors and Problems">ERRORS & PROBLEMS</option>
                     <option value="Operations">OPERATIONS</option>
                 </select>
             </div>
@@ -180,5 +196,4 @@
         </form>
     </div>
 </body>
-
 </html>

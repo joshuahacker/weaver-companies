@@ -35,6 +35,7 @@ define(["N/ui/serverWidget", "N/file", "N/log", "N/https"], function (
       var priority = context.request.parameters.priority;
       var description = context.request.parameters.description;
       var department = context.request.parameters.department;
+      var date = context.request.parameters.date;
 
       // Get the uploaded file from the form
       var uploadedFile = context.request.files.attachment;
@@ -50,6 +51,7 @@ define(["N/ui/serverWidget", "N/file", "N/log", "N/https"], function (
       var formValues = JSON.stringify({
         toBottom: true,
         cells: [
+          { columnId: "6301649618292612", value: date },
           { columnId: "4049849804607364", value: email },
           { columnId: "8553449431977860", value: request },
           { columnId: "390675107368836", value: description },
@@ -86,6 +88,7 @@ define(["N/ui/serverWidget", "N/file", "N/log", "N/https"], function (
           body: formValues,
         });
         var responseBody = JSON.parse(response.body);
+        log.audit("Smartsheet Response", responseBody)
 
         // Get the row ID
         var rowId = responseBody.result.id;
@@ -132,8 +135,9 @@ define(["N/ui/serverWidget", "N/file", "N/log", "N/https"], function (
 
       } catch (error) {
         log.error("Smartsheet Error", error.message);
+        log.audit("No file uploaded or Error")
 
-        // Error Submitted Alert and Redirect
+        // Error Submitted Alert or no file attached alert and Redirect
         var html = "<html><body>";
         html += '<script type="text/javascript">';
         html += 'alert("Form submitted successfully without an uploaded file. If you have multiple files, please email files to netsuiteadmin@unclenearest.com");';
