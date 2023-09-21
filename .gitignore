@@ -25,6 +25,7 @@ build
 
 # misc
 .sass-cache
+.hintrc
 
 # Optional npm cache directory
 .npm
