@@ -42,3 +42,11 @@ project.json
 
 #test
 test.js
+src/FileCabinet/SuiteScripts/Gift Certificate/images/image-1.png
+src/FileCabinet/SuiteScripts/Gift Certificate/images/image-2.png
+src/FileCabinet/SuiteScripts/Gift Certificate/images/image-3.png
+.gitignore
+src/FileCabinet/SuiteScripts/Gift Certificate/images/image-4.png
+src/FileCabinet/SuiteScripts/Gift Certificate/images/image-5.png
+src/FileCabinet/SuiteScripts/Gift Certificate/gift_card_email_template_test.html
+src/FileCabinet/SuiteScripts/Gift Certificate/gift_card_email_template.html
