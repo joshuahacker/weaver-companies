@@ -1,0 +1,243 @@
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+        <title>Online Support Form</title>
+        <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+        <style>
+            textarea {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                padding: 6px 12px !important;
+                font-size: 14px !important;
+                line-height: 1.42857143 !important;
+                color: #555 !important;
+                background-color: #fff !important;
+                background-image: none !important;
+                border: 1px solid #ccc !important;
+                border-radius: 4px !important;
+                box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075) !important;
+            }
+        </style>
+        <style>
+            img.bg-img {
+                min-height: 100%;
+                height: auto;
+                position: fixed;
+                top: 0;
+                right: 0;
+                z-index: 0;
+            }
+
+            legend {
+                margin-top: 15px;
+            }
+
+            input,
+            button,
+            select,
+            textarea {
+                font-family: inherit;
+                font-size: inherit;
+                line-height: inherit;
+            }
+
+            input,
+            select {
+                display: block;
+                width: 100% !important;
+                height: 34px !important;
+                padding: 6px 12px;
+                font-size: 14px !important;
+                line-height: 1.428571429;
+                color: #555555;
+                vertical-align: middle;
+                background-color: #ffffff;
+                background-image: none;
+                border: 1px solid #cccccc;
+                border-radius: 4px;
+                -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+                box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+                -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+                transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+            }
+
+            input:focus,
+            select:focus {
+                border-color: #66afe9;
+                outline: 0;
+                -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, 0.6);
+                box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, 0.6);
+            }
+
+            input:-moz-placeholder {
+                color: #999999;
+            }
+
+            input::-moz-placeholder {
+                color: #999999;
+                opacity: 1;
+            }
+
+            input:-ms-input-placeholder {
+                color: #999999;
+            }
+
+            input::-webkit-input-placeholder {
+                color: #999999;
+            }
+
+            input[disabled],
+            input[readonly],
+            fieldset[disabled] input {
+                cursor: not-allowed;
+                background-color: #eeeeee;
+            }
+
+            textarea {
+                height: auto;
+            }
+
+            button,
+            input,
+            select,
+            textarea {
+                font-family: inherit;
+                font-size: 100%;
+                margin: 0;
+            }
+
+            button,
+            input {
+                line-height: normal;
+            }
+
+            button,
+            select {
+                text-transform: none;
+            }
+
+            button,
+            html input[type="button"],
+            input[type="reset"],
+            input[type="submit"] {
+                -webkit-appearance: button;
+                cursor: pointer;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .form-action {
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+
+            <img class="bg-img"
+                src="https://system.na1.netsuite.com/core/media/media.nl?id=50&c=1121902&h=ba1cb2f8f2299fc36d5f">
+            <br>
+            <div class="row">
+                <header class="col-md-9">
+                    <div class="page-header">
+                        <img src="{#LOGO#}" alt="LOGO">
+                        <h1>Online Support Form</h1>
+                    </div>
+                </header>
+            </div>
+            <div class="row">
+                <form role="form">
+                    <div class="col-md-9">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <legend>Contact Information</legend>
+                                <div class="col-md-12">
+                                    <div class="control-group">
+                                        <label class="control-label" for="Subject">Subject*</label>
+                                        <nltitle>
+                                        </nltitle>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="control-group">
+                                        <label class="control-label" for="firstname">First name *</label>
+                                        <nlfirstname>
+                                        </nlfirstname>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="control-group">
+                                        <label class="control-label" for="lastname">Last name *</label>
+                                        <nllastname>
+                                        </nllastname>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="control-group">
+                                        <label class="control-label" for="email">Email *</label>
+                                        <nlemail>
+                                        </nlemail>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="control-group">
+                                        <label class="control-label" for="Case Type">Case Type *</label>
+                                        <nlcategory>
+                                        </nlcategory>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="control-group">
+                                        <label class="control-label" for="Phone">Phone*</label>
+                                        <nlphone>
+                                        </nlphone>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="control-group">
+                                        <label class="control-label" for="Subsidiary"></label>
+                                        <nlsubsidiary>
+                                        </nlsubsidiary>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="control-group">
+                                        <label class="control-label" for="Message">Message</label>
+                                        <nlincomingmessage>
+                                        </nlincomingmessage>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-action">
+                                        <button type="submit" class="btn btn-lg btn-primary btn-block">Submit
+                                            form</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-9">
+                <hr>
+
+                <footer class="text-muted">
+                    <p class="pull-right">* Required fields</p>
+                    <p>
+                        © NetSuite
+                    </p>
+                </footer>
+            </div>
+
+
+    </body>
+
+    </html>
+    

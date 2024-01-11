@@ -6,6 +6,7 @@
     "upload": "node ./.vscode/uploadFile.js"
   },
   "dependencies": {
+    "node-fetch": "^3.3.2",
     "vscode": "^1.1.34"
   }
 }
