@@ -2,23 +2,36 @@
  * @NApiVersion 2.x
  * @NScriptType Suitelet
  */
-define(['N/https', 'N/log', 'N/record'], function (https, log, record) {
+define(['N/https', 'N/log', 'N/record', 'N/ui/serverWidget'], function (https, log, record, serverWidget) {
 
     var itemMapping = {
-        'BF Drink Ticket': '6059'
+        'BF Drink Ticket': '1432',
+        'BF Food Ticket': '6077'
     };
+
+   
 
     function createCashSale(orderInfo) {
         // New Cash Sale Record
         var cashSale = record.create({
-            type: 'cashsale',
+            type: record.Type.CASH_SALE,
             isDynamic: false,
             defaultValues: {
                 customform: 172,
-                entity: 17, 
+                entity: 762, 
                 subsidiary: 5,
            }
         });
+
+        cashSale.setValue({
+            fieldId: 'memo',
+            value: 'Square Orders from Balloon Fest',
+        })
+
+        cashSale.setValue({
+            fieldId: 'location',
+            value: 14
+        })
 
         cashSale.setValue({
             fieldId: 'trandate',
@@ -28,13 +41,11 @@ define(['N/https', 'N/log', 'N/record'], function (https, log, record) {
 
         var squareItemName = orderInfo['Item Name'];
         var netSuiteItemValue = itemMapping[squareItemName];
-      
-   log.debug('Item Name:', netSuiteItemValue)
-      
+ 
         cashSale.setSublistValue({
             sublistId: 'item',
             fieldId: 'item',
-            line: 1,
+            line: 0,
             value: netSuiteItemValue
         });
       
@@ -42,18 +53,16 @@ define(['N/https', 'N/log', 'N/record'], function (https, log, record) {
         cashSale.setSublistValue({
             sublistId: 'item',
             fieldId: 'quantity',
-            line: 1,
+            line: 0,
             value: orderInfo['Quantity']
         });
 
         cashSale.setSublistValue({
             sublistId: 'item',
             fieldId: 'rate',
-            line: 1,
+            line: 0,
             value: orderInfo['Amount']
         });
-
-    
 
         // Save the Cash Sale record
         var cashSaleId = cashSale.save();
@@ -61,9 +70,60 @@ define(['N/https', 'N/log', 'N/record'], function (https, log, record) {
         return cashSaleId;
     }
 
+    function cashSaleTranId (cashSaleId) {
+
+    var cashSaleTranId = record.load({
+        type: record.Type.CASH_SALE,
+        id: cashSaleId,
+        });
+
+       var newTranId = cashSaleTranId.getValue({
+            fieldId: 'tranid'
+        });
+
+        return newTranId
+    };
+
+//Connect Square API and get Orders
     function onRequest(context) {
-        if (context.request.method === 'GET') {
+        if (context.request.method === 'GET'){
+
+            var form = serverWidget.createForm({
+                title: 'Square Order Ids',
+                hideNavBar: false
+            });
+
+            form.addField({
+                id: 'custpage_square_orders',
+                label: 'Square Orders',
+                type: serverWidget.FieldType.TEXTAREA, 
+                displaySize: { 
+                    height: 5,
+                    width: 50
+                }
+                });
+
+                form.addSubmitButton({
+                    label: 'Submit'
+                })
+
+                context.response.writePage(form)
+
+        } else if (context.request.method === 'POST') {
+
+            var orderIds = context.request.parameters.custpage_square_orders.split('\n')
+                .map(function(orderId) {
+                    return orderId.trim(); // Remove leading/trailing whitespace
+                })
+                .filter(function(orderId) {
+                    return orderId !== ''; // Filter out empty strings
+                });
+
+
             var sqToken = 'EAAAEa-iM-IsOHsG4R6icz6_TiubHr_-NV4nLqJ6Ht0vR6r0WjiAE5jRVhkV9ZVQ';
+
+            log.debug('Sq Orders:', orderIds)
+
             var sqLocation = 'J55ZSCT943J06';
 
             var url = 'https://connect.squareup.com/v2/orders/batch-retrieve';
@@ -74,12 +134,14 @@ define(['N/https', 'N/log', 'N/record'], function (https, log, record) {
                 'Accept': 'application/json'
             };
 
+// NxnhZ8cnqPCN2tQE9LYHcSlyk77YY
+
+
             var requestSqData = {
                 'location_id': sqLocation,
-                'order_ids': [
-                    'NxnhZ8cnqPCN2tQE9LYHcSlyk77YY',
-                ]
+                'order_ids': orderIds
             };
+
 
             try {
                 var sqResponse = https.post({
@@ -90,33 +152,39 @@ define(['N/https', 'N/log', 'N/record'], function (https, log, record) {
 
                 if (sqResponse.code === 200) {
                     var sqOrderResponse = JSON.parse(sqResponse.body);
-
+                
                     if (sqOrderResponse.orders && sqOrderResponse.orders.length > 0) {
-                        var orderDetails = [];
-
                         sqOrderResponse.orders.forEach(function (order) {
-                            var itemName = order.line_items[0].name;
-                            var quantity = order.line_items[0].quantity;
-                            var amount = order.line_items[0].base_price_money.amount / 100;
-                            var orderDate = order.created_at;
-
-                            orderDetails.push({
-                                'Item Name': itemName,
-                                'Quantity': quantity,
-                                'Amount': amount,
-                                'Order Date': orderDate
-                            });
-                        });
-
-                        log.audit('Square Order #:', sqResponse.body);
-
-                        // Create Cash Sale for each order
-                        orderDetails.forEach(function (orderInfo) {
-                            var cashSaleId = createCashSale(orderInfo);
-                            if (cashSaleId) {
-                                log.audit('Cash Sale Created', 'Cash Sale ID: ' + cashSaleId);
-                            } else {
-                                log.error('Cash Sale Creation Error', 'Cash Sale creation failed.');
+                            var orderItems = order.line_items;
+                
+                            if (orderItems && orderItems.length > 0) {
+                                var cashSaleItems = [];
+                
+                                orderItems.forEach(function (item) {
+                                    var itemName = item.name;
+                                    var quantity = item.quantity;
+                                    var amount = item.base_price_money.amount / 100;
+                
+                                    // Push line items to the cashSaleItems array
+                                    cashSaleItems.push({
+                                        'Item Name': itemName,
+                                        'Quantity': quantity,
+                                        'Amount': amount
+                                    });
+                                });
+                
+                                // Create Cash Sale for the entire order with aggregated line items
+                                var cashSaleId = createCashSale({
+                                    'Order Items': cashSaleItems, // Pass the array of line items
+                                    'Order Date': order.created_at
+                                });
+                
+                                var newSaleId = cashSaleTranId(cashSaleId);
+                                if (newSaleId) {
+                                    log.audit('Cash Sale Created', 'Cash Sale ID: ' + newSaleId);
+                                } else {
+                                    log.error('Cash Sale Creation Error', 'Cash Sale creation failed.');
+                                }
                             }
                         });
 
