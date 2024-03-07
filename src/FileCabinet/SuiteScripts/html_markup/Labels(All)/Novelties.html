@@ -1,0 +1,73 @@
+<pdf>
+    <head>
+        <style type="text/css">
+          body {margin-left: 0.1in;
+            margin-top: .25in;
+            width: 8.5in;
+            }
+    
+        table {
+      width: 1.75in;
+      height: 0.4in;
+      vertical-align: center;
+      font-size: 6px;
+      border: 0px;
+      padding: 0in
+          }
+    
+    td {
+          font-size: 8.5px;
+          text-align: center;
+          overflow-wrap: break-word;
+          padding-right: .3in;
+      padding-left: .05in;
+          border: 0px;
+          word-wrap: break-word;
+          word-break: break-all;
+          }
+    
+    tr {
+          text-align:center;
+          vertical-align: middle;
+          }
+    </style>
+    </head>
+    <body padding=".25in .25in .25in .25in">
+        <table style="size: Letter;">
+            <#list records as label>
+                <#if label_index % 4 == 0>
+                    <tr style="height: 0.4in;">
+                </#if>
+                <td style="width: 1.75in; height: .4in;">
+                    <table>
+                        <tr>
+                            <#if (label.skuUpcBarcode?length > 0)>
+                                <#if label.skuUpcBarcode?is_number && (label.skuUpcBarcode?length == 12 || label.skuUpcBarcode?length == 13)>
+                                    <td style="align: center;"><barcode bar-width=".7" bar-height=".2" codetype="<#if label.upc>upca<#else>ean13</#if>" showtext="true" value="<#if label.upc>0</#if>${label.skuUpcBarcode?j_string}"></barcode></td>
+                                <#else>
+                                    <td style="align: center;"><barcode bar-width=".7" bar-height=".2" codetype="code128" showtext="false" value="${label.skuUpcBarcode?html}"></barcode></td>
+                                </#if>
+                            <#else>
+                                <td style="align: center;"><barcode bar-width=".7" bar-height=".2" codetype="code128" showtext="false" value="${label.id?html}"></barcode></td>
+                            </#if>
+                        </tr>
+                        <tr>
+                          <#if (label.name?length > 16)>
+                               <td style="align: center;">${label.name?substring(0,14)} | ${label.price} </td>
+                             <#else>
+                               <td style="align: center;">${label.name} | ${label.price}</td>
+                           <#if label.name?is_number && label.name?length >= 16>
+                              <td style="align: center;">${label.name?substring(0,14)} | ${label.price} </td>
+                              </#if>
+                         </#if>
+                     </tr>
+                    </table>
+                </td>
+                  <#if label_index % 2 == 1><td style="width: 0.38in; padding-left:.01in;"></td></#if>
+    <#if label_index % 4 == 3 || label_index == records?size - 1>
+                    </tr>
+                </#if>
+            </#list>
+        </table>
+    </body>
+    </pdf>

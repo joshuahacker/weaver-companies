@@ -1,0 +1,77 @@
+<pdf>
+    <head>
+      <style type="text/css">
+  
+           body {margin-left: 0.40in;
+          margin-top: .40in;
+          width: 8.5";
+      }
+      
+          table {
+              width: 2.1in;
+              height: 1in;
+              vertical-align: center;
+              font-size: 6px;
+              border: 0px;
+            padding-bottom: 4px;
+          }
+      
+          td {
+              font-size: 8.5px;
+              text-align: center;
+              overflow-wrap: break-word;
+              border: 0px;
+              word-wrap: break-word;
+              word-break: break-all;
+          }
+      
+          tr {
+              text-align:center;
+              vertical-align: middle;
+          }
+      </style>
+    </head>
+    <body padding=".25in .25in .25in .25in">
+     <table style="size: Letter;">
+            <#list records as label>
+              <#if label_index % 3 == 0>
+                <tr style="height: 1in; padding-bottom: 10px; padding-top: 7.5px">
+              </#if>
+                <td style="width: 2.1in; height: 1in; padding-right: 29px; padding-left: 15px">
+                    <table>
+                        <tr>
+                            <td style="text-align: center;">
+                                <#if (label.skuUpcBarcode?length > 0)>
+                                    <#if label.skuUpcBarcode?is_number && (label.skuUpcBarcode?length == 12 || label.skuUpcBarcode?length == 13)>
+                                        <barcode bar-width="1" bar-height=".2" codetype="<#if label.upc>upca<#else>ean13</#if>" showtext="true" value="<#if label.upc>0</#if>${label.skuUpcBarcode?j_string}"></barcode>
+                                    <#else>
+                                        <barcode bar-width=".75" bar-height=".2" codetype="code128" showtext="false" value="${label.skuUpcBarcode?html}"></barcode>
+                                    </#if>
+                                <#else>
+                                    <barcode bar-width=".75" bar-height=".2" codetype="code128" showtext="false" value="${label.id?html}"></barcode>
+                                </#if>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                              ${label.name}<br></br> ${label.price} <br></br>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <#if label_index % 3 == 2><td style="width: 0.1in; padding-left: .8px;"></td> 
+                  <!-- Close the row after every 3 labels -->
+              </tr>
+          </#if>
+          <#if label_index == (records?size - 1) && (label_index % 3 != 2)>
+              <!-- Fill empty cells if the last row has less than 3 labels -->
+              <#assign emptyCells = 2 - (label_index % 3)>
+              <#list 1..emptyCells as i>
+                  <td></td>
+              </#list>
+              </tr>
+          </#if>
+      </#list>
+  </table>
+  </body>
+  </pdf>
