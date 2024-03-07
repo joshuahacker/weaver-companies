@@ -7,10 +7,6 @@
   },
   "dependencies": {
     "node-fetch": "^3.3.2",
-<<<<<<< HEAD
-    "prettier": "^3.2.4",
-=======
->>>>>>> 5d24b1b0c75bb806cf362df56647f6ca5fd3b743
     "vscode": "^1.1.34"
   }
 }
