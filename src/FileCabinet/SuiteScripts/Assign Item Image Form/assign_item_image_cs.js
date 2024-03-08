@@ -1,6 +1,6 @@
 /**
  * @NApiVersion 2.x
- * @NScriptType Client
+ * @NScriptType ClientScript    
  */
 
 define(['N/currentRecord', 'N/log'], function(currentRecord, log) {
@@ -10,11 +10,8 @@ define(['N/currentRecord', 'N/log'], function(currentRecord, log) {
         var imageUrlDiv = document.getElementById('hiddenImageUrl');
         if (imageUrlDiv) {
             var imageUrl = imageUrlDiv.innerText;
-            // Now you can use this URL to display the image as needed
-            // For example, appending it to a certain part of the form
-            // This is a basic example; adjust as needed for your form
             var imageContainer = document.createElement('div');
-            imageContainer.innerHTML = '<img src="' + imageUrl + '" alt="Item Image" style="max-width: 200px; max-height: 200px;">';
+            imageContainer.innerHTML = '<img src="' + imageUrl + '" alt="Item Image" style="max-width: 250px; max-height: 250px; padding-top: 5px;">';
             document.body.appendChild(imageContainer);
         }
     }
