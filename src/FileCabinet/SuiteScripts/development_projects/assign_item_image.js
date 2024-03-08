@@ -34,7 +34,7 @@ define(['N/record', 'N/search', 'N/log'], function(record, search, log) {
         if (imageUrl) {
             var imageField = context.form.getField({ id: 'custitem_item_image' }); 
             if (imageField) {
-                imageField.defaultValue = '<img src="' + imageUrl + '" alt="Item Image" style="max-width: 100px; max-height: 200px;">';
+                imageField.defaultValue = '<img src="' + imageUrl + '" alt="Item Image" style="max-width: 200px; max-height: 275px; margin-top: 5px;">';
             } else {
                 log.debug('Field Not Found', 'The field custitem_image_assign was not found on the form.');
             }

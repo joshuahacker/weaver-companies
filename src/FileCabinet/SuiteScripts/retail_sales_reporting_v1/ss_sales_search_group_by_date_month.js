@@ -51,9 +51,7 @@ define(['N/search', 'N/ui/serverWidget', 'N/log'], function(search, sw, log) {
                 "AND", 
                 ["account","noneof","110"], 
                  "AND", 
-                ["location","anyof","14"], 
-                  "AND", 
-                ["trandate","within","12/17/2023","12/31/2023"]
+                ["location","anyof","14"]
             ],
             columns: summaryColumns
         });
@@ -126,9 +124,7 @@ define(['N/search', 'N/ui/serverWidget', 'N/log'], function(search, sw, log) {
                 "AND", 
                 ["account","noneof","110"], 
                  "AND", 
-                ["location","anyof","14"], 
-                "AND", 
-                ["trandate","within","12/17/2023","12/17/2023"]
+                ["location","anyof","14"],  
             ],
             columns: summaryColumns
         });

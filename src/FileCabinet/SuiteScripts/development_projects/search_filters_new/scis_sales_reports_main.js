@@ -30,18 +30,13 @@ define([
             log.debug(dateFilter)
 
             var form = serverWidget.createForm({
-                title: 'Nearest Green Distillery - Retail Sales'
+                title: '160 - Retail Sales Profit & Loss'
             });
 
             // Form Tabs
             var reportsDateTab = form.addTab({
                 id: 'custpage_reports_date_tab',
                 label: 'Reports by Date'
-            });
-
-            var reportsAnalyticsTab = form.addTab({
-                id: 'custpage_reports_analytics_tab',
-                label: 'Report Analytics'
             });
 
             // Function to Create All Sublists 

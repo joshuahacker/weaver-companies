@@ -228,4 +228,8 @@ function runSalesSearch(dateFilter, form, serverWidget) {
   context.response.writePage(form);
 
     }
+
+    return {
+      onRequest: onRequest
+    }
 });
