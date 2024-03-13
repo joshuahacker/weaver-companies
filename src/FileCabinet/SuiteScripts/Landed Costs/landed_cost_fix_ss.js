@@ -3,325 +3,229 @@
  * @NScriptType Suitelet
  * @NModuleScope SameAccount
  */
-define([
-	"N/ui/serverWidget",
-	"N/search",
-	"N/record",
-	"N/url",
-	"N/log",
-], function (serverWidget, search, record, url, log) {
-	function onRequest(context) {
-		if (context.request.method === "GET") {
-			var form = serverWidget.createForm({
-				title: "Landed Cost Adjustment",
-			});
+define(["N/ui/serverWidget", "N/search", "N/record", "N/log"], function (
+  serverWidget,
+  search,
+  record,
+  log
+) {
+  function onRequest(context) {
+      if (context.request.method === "GET") {
+          createGetResponseForm(context);
+      } else if (context.request.method === "POST") {
+          createPostResponseForm(context);
+      }
+  }
 
-			var purchaseOrderToVendorBillMap = {};
+  function createGetResponseForm(context) {
+      var form = serverWidget.createForm({ title: "Landed Cost Adjustment" });
 
-			var vendorBillSearch = search.create({
-				type: search.Type.VENDOR_BILL,
-				filters: [
-					["item", search.Operator.ANYOF, ["3393", "4995"]], // Freight and Custom Duties Item IDs
-				],
-				columns: [
-					"internalid",
-					"createdfrom",
-					"tranid", // Transaction ID of the Vendor Bill
-				],
-			});
+      var pageNumber = parseInt(context.request.parameters.pg) || 1; // Get current page number from URL parameter, default to 1
 
-			vendorBillSearch.run().each(function (result) {
-				var poId = result.getValue({ name: "createdfrom" });
-				var billId = result.getValue({ name: "internalid" });
-				var billTranId = result.getValue({ name: "tranid" });
-				purchaseOrderToVendorBillMap[poId] = {
-					billId: billId,
-					billTranId: billTranId,
-				};
-				return true;
-			});
+      var { itemReceiptSearch: itemReceiptSearch, poToBillsMap: poToBillsMap } = createItemReceiptSearch();
 
-			// Second Search: Item Receipts Linked to Those Purchase Orders
-			var itemReceiptSearch = search.create({
-				type: search.Type.ITEM_RECEIPT,
-				filters: [
-					["mainline", search.Operator.IS, "T"],
-					"AND",
-					[
-						"createdfrom",
-						search.Operator.ANYOF,
-						Object.keys(purchaseOrderToVendorBillMap),
-					],
-				],
-				columns: [
-					search.createColumn({ name: "internalid" }),
-					search.createColumn({ name: "tranid" }), // Item receipt transaction ID
-					search.createColumn({ name: "trandate" }), // Transaction date
-					search.createColumn({
-						name: "tranid",
-						join: "createdFrom", // Join with the created from record (Purchase Order)
-					}),
-					search.createColumn({
-						name: "memo",
-						join: "createdFrom", // Get memo from the Purchase Order
-					}),
-					search.createColumn({ name: "createdfrom" }),
-				],
-			});
+      addItemReceiptsToList(form, itemReceiptSearch, poToBillsMap, pageNumber);
+      form.addSubmitButton({ label: "Process Selected Receipts" });
 
-			// Create a sublist to display item receipts
-			var list = form.addSublist({
-				id: "custpage_itemreceipt_list",
-				type: serverWidget.SublistType.LIST,
-				label: "Item Receipts",
-			});
+      form.clientScriptModulePath = './cs_landed_cost_button.js';
 
-			// Add columns to the sublist
-			list.addMarkAllButtons();
-			list.addField({
-				id: "custpage_select",
-				type: serverWidget.FieldType.CHECKBOX,
-				label: "Select",
-			});
-			list.addField({
-				id: "custpage_date",
-				type: serverWidget.FieldType.TEXT,
-				label: "Date",
-			});
-			list.addField({
-				id: "custpage_internal_id",
-				type: serverWidget.FieldType.TEXT,
-				label: "Internal ID",
-			});
+      context.response.writePage(form);
+  }
 
-			list.addField({
-				id: "custpage_tranid",
-				type: serverWidget.FieldType.TEXT,
-				label: "Tran ID",
-			});
+  function createItemReceiptSearch() {
 
-			list.addField({
-				id: "custpage_po_tranid",
-				type: serverWidget.FieldType.TEXT,
-				label: "PO Tran ID",
-			});
-			list.addField({
-				id: "custpage_vendor_bill_tranid",
-				type: serverWidget.FieldType.TEXT,
-				label: "Vendor Bill Number",
-			});
-			list.addField({
-				id: "custpage_memo",
-				type: serverWidget.FieldType.TEXT,
-				label: "PO Memo",
-			});
+      
+     var startDate = '01/01/23'; // Adjust to your required start date
+    var endDate = '05/01/23'; // Adjust to your required end date
 
-			var line = 0;
-			itemReceiptSearch.run().each(function (result) {
-				// Retrieve each field value or set a default value if it doesn't exist
-				var internalId = result.getValue({ name: "internalid" }) || "";
-				var tranId = result.getValue({ name: "tranid" }) || "";
-				var trandate = result.getValue({ name: "trandate" }) || "";
-				var poId = result.getValue({ name: "createdfrom" }) || "";
-				var poTranId =
-					result.getValue({
-						name: "tranid",
-						join: "createdFrom",
-					}) || "";
-				var memo =
-					result.getValue({
-						name: "memo",
-						join: "createdFrom",
-					}) || "";
-				var billDetails = purchaseOrderToVendorBillMap[poId] || {};
+    var poToBillsMap = {};
+    var vendorBillSearch = search.create({
+      type: search.Type.VENDOR_BILL,
+      filters: [["item", search.Operator.ANYOF, ["3393", "4995"]], ],
+      columns: ["internalid", "createdfrom", "tranid"],
+      });
 
-				// Set values for each column in the sublist using the correct line number
-				if (internalId) {
-					list.setSublistValue({
-						id: "custpage_internal_id",
-						line: line,
-						value: internalId,
-					});
-				}
+    vendorBillSearch.run().each(function (result) {
+      var poId = result.getValue({ name: "createdfrom" });
+      var billId = result.getValue({ name: "internalid" });
+      var billTranId = result.getValue({ name: "tranid" });
+      poToBillsMap[poId] = {
+        billId: billId,
+        billTranId: billTranId,
+      };
+      return true;
+    });
 
-				if (tranId) {
-					list.setSublistValue({
-						id: "custpage_tranid",
-						line: line,
-						value:
-							'<a href="https://8025197-sb1.app.netsuite.com/app/accounting/transactions/itemrcpt.nl?whence=&id=' +
-							internalId +
-							'&=T&selectedtab=landedcost" target="_blank">' +
-							tranId +
-							"</a>",
-					});
-				}
-				if (trandate) {
-					list.setSublistValue({
-						id: "custpage_date",
-						line: line,
-						value: trandate,
-					});
-				}
-				if (memo) {
-					list.setSublistValue({
-						id: "custpage_memo",
-						line: line,
-						value: memo,
-					});
-				}
-				if (poTranId) {
-					list.setSublistValue({
-						id: "custpage_po_tranid",
-						line: line,
-						value: poTranId,
-					});
-				}
-				if (billDetails) {
-					list.setSublistValue({
-						id: "custpage_vendor_bill_tranid",
-						line: line,
-						value: billDetails.billTranId || "N/A",
-					});
-				}
-				line++;
-				return true;
-			});
+    // Second Search: Item Receipts Linked to Those Purchase Orders
+    var itemReceiptSearch = search.create({
+      type: search.Type.ITEM_RECEIPT,
+      filters: [
+        ["mainline", search.Operator.IS, "T"],
+        "AND",
+        [
+          "createdfrom",
+          search.Operator.ANYOF,
+          Object.keys(poToBillsMap),
+          ],
+          "AND",
+          ["trandate", search.Operator.WITHIN, startDate, endDate] 
+        ],
+      columns: [
+        search.createColumn({ name: "internalid" }),
+        search.createColumn({ name: "tranid" }), // Item receipt transaction ID
+        search.createColumn({ name: "trandate" }), // Transaction date
+        search.createColumn({
+          name: "tranid",
+          join: "createdFrom", // Join with the created from record (Purchase Order)
+        }),
+        search.createColumn({
+          name: "memo",
+          join: "createdFrom", // Get memo from the Purchase Order
+        }),
+        search.createColumn({ name: "createdfrom" }),       
+      ],
+    });
+    return {itemReceiptSearch: itemReceiptSearch, poToBillsMap: poToBillsMap };
+  }
 
-			form.addSubmitButton({ label: "Process Selected Receipts" });
-			context.response.writePage(form);
-		} else if (context.request.method === "POST") {
-			var form = serverWidget.createForm({
-				title: "Landed Cost Adjustment Results",
-			});
+  function addItemReceiptsToList(form, itemReceiptSearch, poToBillsMap) {
+      var list = form.addSublist({
+          id: "custpage_itemreceipt_list",
+          type: serverWidget.SublistType.LIST,
+          label: "Item Receipts"
+      });
 
-			var list = form.addSublist({
-				id: "custpage_results_list",
-				type: serverWidget.SublistType.LIST,
-				label: "Results",
-			});
+      list.addMarkAllButtons();
+      addFieldsToList(list);
 
-			list.addField({
-				id: "custpage_receipt_id",
-				type: serverWidget.FieldType.TEXT,
-				label: "Receipt ID",
-			});
-			list.addField({
-				id: "custpage_freight_amount",
-				type: serverWidget.FieldType.TEXT,
-				label: "Freight Amount",
-			});
-			list.addField({
-				id: "custpage_custom_duties_amount",
-				type: serverWidget.FieldType.TEXT,
-				label: "Custom Duties Amount",
-			});
-			list.addField({
-				id: "custpage_view_link",
-				type: serverWidget.FieldType.TEXT,
-				label: "View Item Receipt",
-			});
+    var line = 0;
 
-			list.addField({
-				id: "custpage_error_message",
-				type: serverWidget.FieldType.TEXT,
-				label: "Completed Message / Error",
-			});
+    var pageSize = 25; 
 
-			var selectedReceiptIds = [];
-			var lineCount = context.request.getLineCount({
-				group: "custpage_itemreceipt_list",
-			});
+    var pagedData = itemReceiptSearch.runPaged({
+        pageSize: pageSize
+    });
+      
+    for (var i = 0; i < pagedData.pageRanges.length; i++) {
+        var currentPage = pagedData.fetch({ index: i });
 
-			for (var i = 0; i < lineCount; i++) {
-				var isSelected = context.request.getSublistValue({
-					group: "custpage_itemreceipt_list",
-					name: "custpage_select",
-					line: i,
-				});
+        currentPage.data.forEach(function(result) {
+            setListValues(list, result, line++, poToBillsMap);
+        });
+    }
+}
 
-				if (isSelected === "T") {
-					// Check if the checkbox is marked as selected
-					var receiptId = context.request.getSublistValue({
-						group: "custpage_itemreceipt_list",
-						name: "custpage_internal_id",
-						line: i,
-					});
-					selectedReceiptIds.push(receiptId);
-				}
-			}
+  function addFieldsToList(list) {
+      var fields = [
+          { id: "custpage_select", type: serverWidget.FieldType.CHECKBOX, label: "Select" },
+          { id: "custpage_date", type: serverWidget.FieldType.TEXT, label: "Date" },
+          { id: "custpage_internal_id", type: serverWidget.FieldType.TEXT, label: "Internal ID" },
+          { id: "custpage_tranid", type: serverWidget.FieldType.TEXT, label: "Tran ID" },
+          { id: "custpage_po_tranid", type: serverWidget.FieldType.TEXT, label: "PO Tran ID" },
+          { id: "custpage_memo", type: serverWidget.FieldType.TEXT, label: "PO Memo" },
+          { id: "custpage_vendor_bill_tranid", type: serverWidget.FieldType.TEXT, label: "Vendor Bill Number" }
+      ];
 
-			// Process selected item receipts
-			var processResults = processLandedCosts(selectedReceiptIds);
+      fields.forEach(function (field) {
+          list.addField(field);
+      });
+  }
 
-			processResults.forEach(function (result, index) {
-				list.setSublistValue({
-					id: "custpage_receipt_id",
-					line: index,
-					value: result.itemReceiptId || "N/A",
-				});
-				list.setSublistValue({
-					id: "custpage_freight_amount",
-					line: index,
-					value: result.freightAmount || "N/A",
-				});
-				list.setSublistValue({
-					id: "custpage_custom_duties_amount",
-					line: index,
-					value: result.customDutiesAmount || "N/A",
-				});
-				list.setSublistValue({
-					id: "custpage_view_link",
-					line: index,
-					value: result.itemReceiptId
-						? '<a href="https://8025197-sb1.app.netsuite.com/app/accounting/transactions/itemrcpt.nl?whence=&id=' +
-							result.itemReceiptId +
-							'&=T&selectedtab=landedcost" target="_blank">View</a>'
-						: "N/A",
-				});
-				list.setSublistValue({
-					id: "custpage_error_message",
-					line: index,
-					value: result.errorMessage ? result.errorMessage + " You must select a cost category on the freight line item on the vendor bill" : "Landed Cost Applied",
-				});
-			});
+  function setListValues(list, result, line, poToBillsMap) {
+      var internalId = result.getValue({ name: "internalid" });
+      var tranId = result.getValue({ name: "tranid" });
+      var trandate = result.getValue({ name: "trandate" });
+      var poId = result.getValue({ name: "createdfrom" });
+      var poTranId = result.getValue({ name: "tranid", join: "createdFrom" });
+      var memo = result.getValue({ name: "memo", join: "createdFrom" });
+      var billDetails = poToBillsMap[poId] || {};
 
-			var backLinkField = form
-				.addField({
-					id: "custpage_back_link",
-					type: serverWidget.FieldType.INLINEHTML,
-					label: "Back Link",
-				})
-				.updateLayoutType({
-					layoutType: serverWidget.FieldLayoutType.OUTSIDEBELOW,
-				})
-				.updateBreakType({
-					breakType: serverWidget.FieldBreakType.STARTROW,
-				});
+      if (internalId) {
+      list.setSublistValue({ id: "custpage_internal_id", line: line, value: internalId }); }
+      if (tranId) {
+      list.setSublistValue({ id: "custpage_tranid", line: line, value: createViewLink(internalId, tranId) }); }
+      if (trandate) {
+      list.setSublistValue({ id: "custpage_date", line: line, value: trandate }); }
+      if (poTranId) {
+      list.setSublistValue({ id: "custpage_po_tranid", line: line, value: poTranId }); }
+      if (memo) {
+      list.setSublistValue({ id: "custpage_memo", line: line, value: memo }); }
+      if (billDetails) {        
+      list.setSublistValue({id: "custpage_vendor_bill_tranid", line: line, value: billDetails.billTranId}); }
 
-			var returnToSuitelet = form
-				.addField({
-					id: "custpage_return_to_suitelet",
-					type: serverWidget.FieldType.INLINEHTML,
-					label: "Return to Suitelet Link",
-				})
-				.updateLayoutType({
-					layoutType: serverWidget.FieldLayoutType.OUTSIDEBELOW,
-				})
-				.updateBreakType({
-					breakType: serverWidget.FieldBreakType.STARTROW,
-				});
+  }
 
-			var returnHtml =
-				'<a href="https://8025197-sb1.app.netsuite.com/app/site/hosting/scriptlet.nl?script=1533&deploy=1">Return to Suitelet</a><br>';
+  function createViewLink(internalId, tranId) {
+      return '<a href="https://8025197.app.netsuite.com/app/accounting/transactions/itemrcpt.nl?whence=&id=' +
+          internalId + '&=T&selectedtab=landedcost" target="_blank">' + tranId + '</a>';
+  }
 
-			returnToSuitelet.defaultValue = returnHtml;
+  function createPostResponseForm(context) {
+      var form = serverWidget.createForm({ title: "Landed Cost Adjustment Results" });
+      var list = form.addSublist({
+          id: "custpage_results_list",
+          type: serverWidget.SublistType.LIST,
+          label: "Results"
+      });
 
-			context.response.writePage(form);
-		}
-	}
+      form.addButton({
+          id: 'custpage_return_button',
+          label: 'Return',
+          functionName: 'redirectToSuitelet'
 
-	function processLandedCosts(itemReceiptIds) {
+      })
+
+      form.clientScriptModulePath = './cs_landed_cost_button.js';
+
+
+      addResultFieldsToList(list);
+
+      var selectedReceiptIds = getSelectedReceiptIds(context);
+      var processResults = processLandedCosts(selectedReceiptIds);
+
+      processResults.forEach(function (result, index) {
+          setResultsValues(list, result, index);
+      });
+
+      context.response.writePage(form);
+  }
+
+  function addResultFieldsToList(list) {
+      var fields = [
+          { id: "custpage_receipt_id", type: serverWidget.FieldType.TEXT, label: "Receipt ID" },
+          { id: "custpage_freight_amount", type: serverWidget.FieldType.TEXT, label: "Freight Amount" },
+          { id: "custpage_custom_duties_amount", type: serverWidget.FieldType.TEXT, label: "Custom Duties Amount" },
+          { id: "custpage_view_link", type: serverWidget.FieldType.TEXT, label: "View Item Receipt" },
+          { id: "custpage_error_message", type: serverWidget.FieldType.TEXT, label: "Completed Message / Error" }
+      ];
+
+      fields.forEach(function (field) {
+          list.addField(field);
+      });
+  }
+
+  function getSelectedReceiptIds(context) {
+      var selectedReceiptIds = [];
+      var lineCount = context.request.getLineCount({ group: "custpage_itemreceipt_list" });
+
+      for (var i = 0; i < lineCount; i++) {
+          if (context.request.getSublistValue({ group: "custpage_itemreceipt_list", name: "custpage_select", line: i }) === "T") {
+              selectedReceiptIds.push(context.request.getSublistValue({ group: "custpage_itemreceipt_list", name: "custpage_internal_id", line: i }));
+          }
+      }
+
+      return selectedReceiptIds;
+  }
+
+  function setResultsValues(list, result, index) {
+      list.setSublistValue({ id: "custpage_receipt_id", line: index, value: result.itemReceiptId || "N/A" });
+      list.setSublistValue({ id: "custpage_freight_amount", line: index, value: result.freightApplied || "N/A" });
+      list.setSublistValue({ id: "custpage_custom_duties_amount", line: index, value: result.dutiesApplied || "N/A" });
+      list.setSublistValue({ id: "custpage_view_link", line: index, value: createViewLink(result.itemReceiptId, result.itemReceiptId) });
+      list.setSublistValue({ id: "custpage_error_message", line: index, value: result.errorMessage + ". please enter cost category on freight line item on bill" || "Landed Cost Applied" });
+  }
+
+  function processLandedCosts(itemReceiptIds) {
 		var results = [];
 
 		itemReceiptIds.forEach(function (itemReceiptId) {
@@ -336,8 +240,8 @@ define([
 					if (updatedCosts) {
 						results.push({
 							itemReceiptId: itemReceiptId,
-							freightAmount: updatedCosts.freightAmount,
-							customDutiesAmount: updatedCosts.customDutiesAmount,
+							freightApplied: updatedCosts.freightApplied,
+							dutiesApplied: updatedCosts.dutiesApplied,
 							errorMessage: updatedCosts.errorMessage || null,
 						});
 					}
@@ -352,7 +256,7 @@ define([
 				);
 				results.push({
 					itemReceiptId: itemReceiptId,
-					error: e.message
+					error: e.message,
 				});
 			}
 			log.audit("Processed Receipts", results);
@@ -361,14 +265,15 @@ define([
 		return results;
 	}
 
-	function findAssociatedBill(itemReceiptId) {
-		// Load the item receipt to get the related purchase order's internal ID
-		var itemReceipt = record.load({
-			type: record.Type.ITEM_RECEIPT,
-			id: itemReceiptId,
-		});
-
-		var createdFrom = itemReceipt.getValue("createdfrom");
+    function findAssociatedBill(itemReceiptId) {
+        // Load the item receipt to get the related purchase order's internal ID
+        var itemReceipt = record.load({
+            type: record.Type.ITEM_RECEIPT,
+            id: itemReceiptId,
+        });
+        
+        var createdFrom = itemReceipt.getValue("createdfrom");
+        var landedCostMethod = itemReceipt.getValue({ name: 'landedcostmethod' });
 
 		// Search for bills that were created from this purchase order
 		var billSearch = search.create({
@@ -384,18 +289,19 @@ define([
 
 		if (billSearchResult && billSearchResult.length > 0) {
 			var billIds = billSearchResult.map(function (result) {
-				return result.getValue({ name: "internalid" });
+                return result.getValue({ name: "internalid" })
 			});
 
 			// Log each bill ID
 			billIds.forEach(function (billId) {
-				log.audit("Associated Bill IDs", billId);
+				log.audit("Associated Bill ID", billId);
 			});
 
 			return billIds[0]; // Return the first bill ID
 		} else {
 			return null;
-		}
+        }
+        
 	}
 
 	function checkForLandedCostItems(billId) {
@@ -420,7 +326,7 @@ define([
 			} else if (itemId === "4995") {
 				hasCustomDuties = true;
 			}
-			return true; // Continue searching until both items are found or all lines are checked
+			return true; 
 		});
 
 		// Log the presence of freight and custom duties items
@@ -440,66 +346,65 @@ define([
 	}
 
 	function updateItemReceiptWithLandedCost(itemReceiptId, billId) {
-		var result = {
-			itemReceiptId: itemReceiptId,
-			freightAmount: null,
-			customDutiesAmount: null,
-			errorMessage: null,
-		};
+    var result = {
+        itemReceiptId: itemReceiptId,
+        freightApplied: null,
+        dutiesApplied: null,
+        errorMessage: null,
+    };
 
-		try {
-			// Check if Freight and Custom Duties are on the bill
-			var landedCostCheck = checkForLandedCostItems(billId);
-			var itemReceipt = record.load({
-				type: record.Type.ITEM_RECEIPT,
-				id: itemReceiptId,
-			});
+    try {
+        // Check if Freight and Custom Duties are on the bill
+        var landedCostCheck = checkForLandedCostItems(billId);
+        var itemReceipt = record.load({
+            type: record.Type.ITEM_RECEIPT,
+            id: itemReceiptId,
+        });
 
-			itemReceipt.setText({ fieldId: "landedcostmethod", text: "Quantity" });
+        itemReceipt.setText({ fieldId: "landedcostmethod", text: "Quantity" });
 
-			if (landedCostCheck.hasFreight) {
-				itemReceipt.setValue({
-					fieldId: "landedcostsource7",
-					value: "OTHTRAN",
-				});
-				itemReceipt.setValue({
-					fieldId: "landedcostsourcetran7",
-					value: billId,
-				});
-			}
+        if (landedCostCheck.hasFreight) {
+            itemReceipt.setValue({
+                fieldId: "landedcostsource7",
+                value: "OTHTRAN",
+            });
+            itemReceipt.setValue({
+                fieldId: "landedcostsourcetran7",
+                value: billId,
+            });
+        }
 
-			if (landedCostCheck.hasCustomDuties) {
-				itemReceipt.setValue({
-					fieldId: "landedcostsource8",
-					value: "OTHTRAN",
-				});
-				itemReceipt.setValue({
-					fieldId: "landedcostsourcetran8",
-					value: billId,
-				});
-			}
+        if (landedCostCheck.hasCustomDuties) {
+            itemReceipt.setValue({
+                fieldId: "landedcostsource8",
+                value: "OTHTRAN",
+            });
+            itemReceipt.setValue({
+                fieldId: "landedcostsourcetran8",
+                value: billId,
+            });
+        }
 
-			itemReceipt.save();
+        itemReceipt.save();
 
-			result.freightAmount = landedCostCheck.hasFreight
-				? itemReceipt.getValue({ fieldId: "landedcostamount7" })
-				: "N/A";
-			result.customDutiesAmount = landedCostCheck.hasCustomDuties
-				? itemReceipt.getValue({ fieldId: "landedcostamount8" })
-				: "N/A";
-		} catch (e) {
-			result.errorMessage =
-				"Error updating item receipt ID " +
-				itemReceiptId +
-				": " +
-				e.message;
-			log.error("Update Error", result.errorMessage);
-		}
+        var itemReceipt = record.load({
+          type: record.Type.ITEM_RECEIPT,
+          id: itemReceiptId,
+       });
 
-		return result;
-	}
+        // Assigning the values after saving the record
+        result.freightApplied = landedCostCheck.hasFreight ? itemReceipt.getValue({ fieldId: "landedcostamount7" }) : "N/A";
+        result.dutiesApplied = landedCostCheck.hasCustomDuties ? itemReceipt.getValue({ fieldId: "landedcostamount8" }) : "N/A";
 
-	return {
+    } catch (e) {
+        result.errorMessage = "Error updating item receipt ID " + itemReceiptId + ": " + e.message;
+        log.error("Update Error", result.errorMessage);
+    }
+
+    return result;
+}
+
+  return {
 		onRequest: onRequest,
 	};
 });

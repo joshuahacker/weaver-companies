@@ -19,13 +19,36 @@ define(["N/ui/serverWidget", "N/search", "N/record", "N/log"], function (
 
   function createGetResponseForm(context) {
       var form = serverWidget.createForm({ title: "Landed Cost Adjustment" });
+
+      var pageNumber = parseInt(context.request.parameters.pg) || 1; // Get current page number from URL parameter, default to 1
+
       var { itemReceiptSearch: itemReceiptSearch, poToBillsMap: poToBillsMap } = createItemReceiptSearch();
-      addItemReceiptsToList(form, itemReceiptSearch, poToBillsMap);
+
+      addItemReceiptsToList(form, itemReceiptSearch, poToBillsMap, pageNumber);
+
+       form.addButton({
+            id : 'custpage_prev',
+            label : 'Previous',
+            functionName : "goToPage(" + (pageNumber - 1) + ")"
+        });
+        form.addButton({
+            id : 'custpage_next',
+            label : 'Next',
+            functionName : "goToPage(" + (pageNumber + 1) + ")"
+        });
+        
       form.addSubmitButton({ label: "Process Selected Receipts" });
+
+      form.clientScriptModulePath = './cs_landed_cost_button.js';
+
       context.response.writePage(form);
   }
 
   function createItemReceiptSearch() {
+
+      
+     var startDate = '01/01/23'; // Adjust to your required start date
+    var endDate = '05/01/23'; // Adjust to your required end date
 
     var poToBillsMap = {};
     var vendorBillSearch = search.create({
@@ -55,8 +78,10 @@ define(["N/ui/serverWidget", "N/search", "N/record", "N/log"], function (
           "createdfrom",
           search.Operator.ANYOF,
           Object.keys(poToBillsMap),
+          ],
+          "AND",
+          ["trandate", search.Operator.WITHIN, startDate, endDate] 
         ],
-      ],
       columns: [
         search.createColumn({ name: "internalid" }),
         search.createColumn({ name: "tranid" }), // Item receipt transaction ID
@@ -69,28 +94,43 @@ define(["N/ui/serverWidget", "N/search", "N/record", "N/log"], function (
           name: "memo",
           join: "createdFrom", // Get memo from the Purchase Order
         }),
-        search.createColumn({ name: "createdfrom" }),
+        search.createColumn({ name: "createdfrom" }),       
       ],
     });
     return {itemReceiptSearch: itemReceiptSearch, poToBillsMap: poToBillsMap };
   }
 
-  function addItemReceiptsToList(form, itemReceiptSearch, poToBillsMap) {
-      var list = form.addSublist({
-          id: "custpage_itemreceipt_list",
-          type: serverWidget.SublistType.LIST,
-          label: "Item Receipts"
-      });
+function addItemReceiptsToList(form, itemReceiptSearch, poToBillsMap, pageNumber) {
+    var list = form.addSublist({
+        id: "custpage_itemreceipt_list",
+        type: serverWidget.SublistType.LIST,
+        label: "Item Receipts"
+    });
 
-      list.addMarkAllButtons();
-      addFieldsToList(list);
+    list.addMarkAllButtons();
+    addFieldsToList(list);
 
-      var line = 0;
-      itemReceiptSearch.run().each(function (result) {
-          setListValues(list, result, line++, poToBillsMap);
-          return true;
-      });
-  }
+    var pageSize = 10;
+    var line = 0; // Line counter for sublist
+    var pageIndex = (pageNumber - 1) * pageSize; // Page index for tracking position in search results
+    var searchResults = itemReceiptSearch.run();
+    var resultSlice;
+
+    do {
+        // Fetch next slice of search results
+        resultSlice = searchResults.getRange({ start: pageIndex, end: pageIndex + pageSize });
+        pageIndex += pageSize; // Prepare index for next potential fetch
+
+        for (var i = 0; i < resultSlice.length; i++) {
+            var result = resultSlice[i];
+
+            setListValues(list, result, line++, poToBillsMap);
+            if (line >= pageSize) break;
+        }
+
+    } while (line < pageSize && resultSlice.length >= pageSize);
+}
+
 
   function addFieldsToList(list) {
       var fields = [
@@ -133,7 +173,7 @@ define(["N/ui/serverWidget", "N/search", "N/record", "N/log"], function (
   }
 
   function createViewLink(internalId, tranId) {
-      return '<a href="https://8025197-sb1.app.netsuite.com/app/accounting/transactions/itemrcpt.nl?whence=&id=' +
+      return '<a href="https://8025197.app.netsuite.com/app/accounting/transactions/itemrcpt.nl?whence=&id=' +
           internalId + '&=T&selectedtab=landedcost" target="_blank">' + tranId + '</a>';
   }
 
@@ -144,6 +184,16 @@ define(["N/ui/serverWidget", "N/search", "N/record", "N/log"], function (
           type: serverWidget.SublistType.LIST,
           label: "Results"
       });
+
+      form.addButton({
+          id: 'custpage_return_button',
+          label: 'Return',
+          functionName: 'redirectToSuitelet'
+
+      })
+
+      form.clientScriptModulePath = './cs_landed_cost_button.js';
+
 
       addResultFieldsToList(list);
 
@@ -232,14 +282,14 @@ define(["N/ui/serverWidget", "N/search", "N/record", "N/log"], function (
 		return results;
 	}
 
-	function findAssociatedBill(itemReceiptId) {
-		// Load the item receipt to get the related purchase order's internal ID
-		var itemReceipt = record.load({
-			type: record.Type.ITEM_RECEIPT,
-			id: itemReceiptId,
-		});
-
-		var createdFrom = itemReceipt.getValue("createdfrom");
+    function findAssociatedBill(itemReceiptId) {
+        // Load the item receipt to get the related purchase order's internal ID
+        var itemReceipt = record.load({
+            type: record.Type.ITEM_RECEIPT,
+            id: itemReceiptId,
+        });
+        
+        var createdFrom = itemReceipt.getValue("createdfrom");
 
 		// Search for bills that were created from this purchase order
 		var billSearch = search.create({
@@ -255,18 +305,19 @@ define(["N/ui/serverWidget", "N/search", "N/record", "N/log"], function (
 
 		if (billSearchResult && billSearchResult.length > 0) {
 			var billIds = billSearchResult.map(function (result) {
-				return result.getValue({ name: "internalid" });
+                return result.getValue({ name: "internalid" })
 			});
 
 			// Log each bill ID
 			billIds.forEach(function (billId) {
-				log.audit("Associated Bill IDs", billId);
+				log.audit("Associated Bill ID", billId);
 			});
 
 			return billIds[0]; // Return the first bill ID
 		} else {
 			return null;
-		}
+        }
+        
 	}
 
 	function checkForLandedCostItems(billId) {

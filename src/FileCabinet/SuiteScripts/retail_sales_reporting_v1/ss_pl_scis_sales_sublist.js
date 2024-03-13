@@ -5,7 +5,7 @@ define(['N/ui/serverWidget', 'N/log', './ss_pl_scis_sales_searches.js'], functio
         var sublist = form.addSublist({
           id: 'custpage_results_sublist',
           type: sw.SublistType.LIST,
-          label: 'Transaction Summary'
+          label: 'PoS Sales by Day - Totals',
         });
 
         var dateFieldGroup = form.addFieldGroup({
