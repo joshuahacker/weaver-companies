@@ -9,9 +9,14 @@ define(['N/url'], function(url) {
     function pageInit() {
         console.log('Page Initialized');
         document.getElementById('custpage_applyFilter').addEventListener('click', applyFilter);
+
     }
 
     function applyFilter() {
+      event.preventDefault();
+      if (window.onbeforeunload){
+   window.onbeforeunload=function() { null;};
+};
         var dateFrom = document.getElementById('custpage_date_from').value;
         var dateTo = document.getElementById('custpage_date_to').value;
 
@@ -34,6 +39,7 @@ define(['N/url'], function(url) {
             suiteletURL += '&' + Object.keys(params).map(function(key) {
                 return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
             }).join('&');
+          
 
             window.location.href = suiteletURL;
         } else {

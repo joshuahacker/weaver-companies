@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+
+<!-- DataTables Bootstrap 4 CSS Integration -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css">
+
+<!-- jQuery Library -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+
+<!-- Bootstrap JS (Including Popper.js for Bootstrap 4) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+  
+<script src="https://cdn.datatables.net/buttons/2.0.0/js/dataTables.buttons.min.js"></script>
+<!-- Include JS for Buttons functionality -->
+<script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.0.0/js/buttons.print.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.1.1/css/all.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+  
+<!-- DataTables Bootstrap 4 JS Integration -->
+<script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js"></script>
+
+
+  <style>   
+      table.dataTable thead th {
+        background-color: #E5E5E5; 
+        text-align: left; 
+        font-size: 13.5px;
+        font-variant-caps: all-small-caps;
+        font-weight: bold;
+        color:#767070;
+      }
+      table.dataTable tfoot th {
+        background-color: #E5E5E5; 
+        color: #151313;
+        text-align: left;
+        font-size: 14px;
+      }
+         table.dataTable tr, td {
+          font-size: 13px;
+          text-align: left;
+         }
+
+.buttons-html5,
+.dt-button,
+.buttons-copy,
+.buttons-excel,
+.buttons-csv,
+.buttons-pdf {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+  background-color: #FFFFFF;
+  margin-top: 13px;
+
+}
+.dt-buttons {
+  margin-top: 15px;
+  font-size: 10px;
+  padding: 0;
+}
+
+    
+    #loader {
+      position: fixed; /* or absolute */
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: -22;
+      font-size: 14px;
+    }
+    .loader-spinner {
+    border: 8px solid #2f21d2; /* Light grey */
+    border-top: 8px solid #061825; /* Blue */
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 2s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+#tbodyData, #thData, #tfootData {
+    display: none;
+}
+
+  </style>
+</head>
+<body>
+<div class="searchWrapper">
+<div class="searchInput"></div>
+</div>
+<div id="loader" style="position: fixed; top: -20; left: -40; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; color: rgb(107, 105, 122);">
+                            <div class="loader-spinner"></div>
+                                        </div>
+    <table id="salesDataTable" class="table" style="width:100%">
+        <thead id="thData">
+      <tr>
+        <th>Date</th>
+        <th><!-- Trans Column Name --></th>
+        <th>Sale Amount</th>
+        <th>Tax</th>
+        <th>Total Revenue</th>
+        <th>Discounts</th>
+        <th>Net Revenue</th>
+        <th>COGS</th>
+        <th>COGS %</th>
+        <th>Net Profit</th>
+        <th>Net Profit %</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyData">
+      <!-- Table content -->
+    </tbody>
+    <tfoot>
+      <tr>
+        <th>Totals:</th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+      </tr>
+    </tfoot>
+  </table>
+</body>
+</html>

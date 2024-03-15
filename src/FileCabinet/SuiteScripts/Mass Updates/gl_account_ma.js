@@ -4,7 +4,7 @@
  */
 define(['N/record', 'N/log'], function(record, log) {
 
-    var subsidiaries = ['1', '6', '5']; // Replace with the internal IDs of the three subsidiaries
+    var subsidiaries = ['6']; // Replace with the internal IDs of the three subsidiaries
     var currentIndex = 0;
 
     function each(params) {
