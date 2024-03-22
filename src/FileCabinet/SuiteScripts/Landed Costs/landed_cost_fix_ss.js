@@ -1,5 +1,5 @@
 /**
- * @NApiVersion 2.x
+ * @NApiVersion 2.1
  * @NScriptType Suitelet
  * @NModuleScope SameAccount
  */
@@ -35,8 +35,8 @@ define(["N/ui/serverWidget", "N/search", "N/record", "N/log"], function (
   function createItemReceiptSearch() {
 
       
-     var startDate = '01/01/23'; // Adjust to your required start date
-    var endDate = '05/01/23'; // Adjust to your required end date
+    var startDate = '01/01/23'; // Adjust to your required start date
+    var endDate = '12/01/23'; // Adjust to your required end date
 
     var poToBillsMap = {};
     var vendorBillSearch = search.create({
@@ -55,36 +55,34 @@ define(["N/ui/serverWidget", "N/search", "N/record", "N/log"], function (
       };
       return true;
     });
-
+      
     // Second Search: Item Receipts Linked to Those Purchase Orders
     var itemReceiptSearch = search.create({
-      type: search.Type.ITEM_RECEIPT,
-      filters: [
-        ["mainline", search.Operator.IS, "T"],
-        "AND",
-        [
-          "createdfrom",
-          search.Operator.ANYOF,
-          Object.keys(poToBillsMap),
-          ],
-          "AND",
-          ["trandate", search.Operator.WITHIN, startDate, endDate] 
-        ],
-      columns: [
-        search.createColumn({ name: "internalid" }),
-        search.createColumn({ name: "tranid" }), // Item receipt transaction ID
-        search.createColumn({ name: "trandate" }), // Transaction date
-        search.createColumn({
-          name: "tranid",
-          join: "createdFrom", // Join with the created from record (Purchase Order)
-        }),
-        search.createColumn({
-          name: "memo",
-          join: "createdFrom", // Get memo from the Purchase Order
-        }),
-        search.createColumn({ name: "createdfrom" }),       
-      ],
-    });
+		type: search.Type.ITEM_RECEIPT,
+		filters: [
+			['mainline', search.Operator.IS, 'T'],
+			'AND',
+			['createdfrom', search.Operator.ANYOF, Object.keys(poToBillsMap)],
+			'AND',
+			['trandate', search.Operator.WITHIN, startDate, endDate],
+			'AND',
+			['custbody_islandedcostapplied', search.Operator.IS, 'F']
+		],
+		columns: [
+			search.createColumn({ name: 'internalid' }),
+			search.createColumn({ name: 'tranid' }), // Item receipt transaction ID
+			search.createColumn({ name: 'trandate' }), // Transaction date
+			search.createColumn({
+				name: 'tranid',
+				join: 'createdFrom' // Join with the created from record (Purchase Order)
+			}),
+			search.createColumn({
+				name: 'memo',
+				join: 'createdFrom' // Get memo from the Purchase Order
+			}),
+			search.createColumn({ name: 'createdfrom' })
+		]
+	});
     return {itemReceiptSearch: itemReceiptSearch, poToBillsMap: poToBillsMap };
   }
 
