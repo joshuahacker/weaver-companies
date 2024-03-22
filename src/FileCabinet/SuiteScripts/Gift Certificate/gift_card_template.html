@@ -13,80 +13,29 @@
         .u-row {
             display: flex;
             text-align: center;
-           
-            
-             
         }
 
         .u-col {
             flex: 1;
-            width: 34%;
-            
-           
-        }
-
-        .u-col-33 {
-            flex: none;
-            width: 34%;
-            
         }
 
         .u-col-34 {
-            flex: none;
             padding-top: 25px;
-            width: 30%;
-            height: 38rem;
-            border: .2rem;
+            flex-basis: 30%;
+            min-height: 38rem;
+            border: .2rem solid rgba(2, 129, 55, 0.555);
             background-color: #062704;
-            border-color:rgba(2, 129, 55, 0.555);
-            border-style: groove;
             margin-top: 1rem;
-           
-            
-        }
-
-        .background-image {
-            background-image: url('./images/bg2.png');
-            background-size:cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-blend-mode:lighten;
-            
-           
-        }
-
-        .giftcard-box {
-            width: 25rem;
-            height: 15rem;
-            display: inline-flex;
-            box-shadow: 0px 1px 1x 0px rgba(185, 172, 172, 0.507);  
             border-radius: 1rem;
-
+            border-style: groove;
         }
 
-        .barcode-box {
-            margin-right: 12rem;
-            margin-top: 1rem;
-            background-color: #ffffff;
-            width: 150%;
-            height: 4rem;
-            box-shadow: 0px 1px 1x 0px rgba(185, 172, 172, 0.507);  
-            border-radius: 4px;
-            font-family: 'Fira Sans', Helvetica, Arial, sans-serif;
-            font-size: 18px;
-            font-weight: normal;
-            color: #9b9b9b;
-
-        }
-
-        .logo_img {
-            height: 110px;
-            width: 110px;
-            display: block;
+        .u-logo {
+            width: 20%;
+            height: 20%;
             margin-left: auto;
             margin-right: auto;
-            margin-bottom: 1rem;
-
+            padding-bottom: 1rem;
         }
 
         .line {
@@ -94,56 +43,145 @@
             font-size: 1px; 
             border-bottom: 2px solid #D9D9D9; 
             width: 90%; 
-            margin-left: 30px;
-            align-items: top;
+            margin: 0 auto;
+        }
+
+        .title, .sub-title, .address {
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            color: #f2baba;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 24px;
+        }
+
+        .sub-title {
+            font-size: 16px;
+            padding-bottom: 10px;
+        }
+
+        .address {
+            font-size: 10px;
+        }
+
+        .giftcard-box {
+            width: 80%;
+            height: 15rem;
+            box-shadow: 0px 1px 1px 0px rgba(185, 172, 172, 0.507);  
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+            background-image: url('./images/image.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-blend-mode: overlay;
+            background-color: #0000004f;
+        }
+
+        .giftcard-value {
+            border-radius: 1rem;
+            width: 75%;
+            height: 70px;
+            font-family: 'Fira Sans';
+            font-size: 60px;
+            background-color: #00000055;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .barcode-box {
+            margin-top: 1rem;
+            padding: 5px;
+            background-color: #0003025d;
+            width: 40%;
+            height: 2rem;
+            box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.675);
+            border-radius: 4px;
+            font-family: 'Fira Sans', Helvetica, Arial, sans-serif;
+            font-size: 18px;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .u-col-34 {
+                flex-basis: 90%;
+                min-height: auto;
+            }
+
+            .giftcard-box {
+                height: auto;
+                padding: 20px;
+            }
+
+            .giftcard-value, .barcode-box {
+                font-size: 40px; /* Adjust based on your preference */
+                height: auto;
+                padding: 10px;
+            }
+
+            .u-logo {
+                width: 40%;
+                height: auto;
+            }
         }
 
         
-        @font-face {
-                font-family: 'Fira Sans';
-                font-style: normal;
-                font-weight: 300;
-                src: url('https://fonts.gstatic.com/s/firasans/v17/va9B4kDNxMZdWfMOD5VnPKreSBf8.woff') format('woff'), url('https://fonts.gstatic.com/s/firasans/v17/va9B4kDNxMZdWfMOD5VnPKreSBf6.woff2') format('woff2');
-            }
-
+@supports (grid-area: auto) {
+  .grid-container{
+    display: grid;
+    grid-template-columns: 33% 33em 33em;
+    grid-template-rows: 20em 20em;
+    grid-column-gap: 0.5rem;
+    grid-row-gap: 0.5rem;
+    grid-template-areas:
+    "area1 area2 area4"
+    "area1 area3 area4";
+  }
+  .area4 {
+    grid-area: area4;
+  }
+  .area3 {
+    grid-area: area3;
+  }
+  .area2 {
+    grid-area: area2;
+  }
+  .area1 {
+    grid-area: area1;
+  }
+}
     </style>
 </head>
 <body>
 
     <div class="u-row">
-        <!-- Left empty column -->
-        <div class="u-col u-col-33">
-            <!-- Empty -->
-        </div>
-        
-        <!-- Center column with content -->
+    <div class="area1"></div>
         <div class="u-col u-col-34">
-            <div></div>
-            <div class="u-row">
-                <img class="logo_img" src="./images/logo_white.png" alt="logo" />
-               
+            <div class="area2">
+                <img class="u-logo" src="https://8025197.app.netsuite.com/core/media/media.nl?id=15992&c=8025197&h=MLWwX4h4-V4iurK73rS6nu_XmSmX8vpzcJfX5CP3sV5qhOnb" alt="logo" />
             </div>
             <div class="line"></div>
-            <div>
-                <h1 style="font-family:Verdana, Geneva, Tahoma, sans-serif; color: #f2baba;">GIFT CARD</h1>
-                <p style="font-family:Verdana, Geneva, Tahoma, sans-serif; color: #f2baba; padding-bottom: 10px">Redeem your gift card in store.</p>
-         
-      
-                <div class="giftcard-box background-image">
-                        <div style="font-family: Fira Sans; font-size: 60px; color: #032007; padding-right: 222px;">$250</div>
-                            <div class="barcode-box">
-                                   Gift Card Code: <span style="color: #1b1b1b;">SDAS6453600&zwnj;0054567</span></div>
-                               
-                
+            <h1 class="title">GIFT CARD</h1>
+            <p class="sub-title">Redeem your gift card in store.</p>
+            <div class="giftcard-box">
+                <div class="giftcard-value">${item.price}</div>
+                <div class="barcode-box">
+                    <span>Code:</span> <span>64536000054567</span>
                 </div>
-            <p style="font-family:Verdana, Geneva, Tahoma, sans-serif; color: #f2baba; font-size: 10px">1111 Shelb Dr., Shelbyville, TN 37777</p>
-         
+            </div>
+            <p class="address">1111 Shelb Dr., Shelbyville, TN 37777</p>
         </div>
-
-        <!-- Right empty column -->
-        <div class="u-col u-col-33">
-            <!-- Empty -->
-        </div>
+        <div class="area3"
     </div>
 
 </body>
