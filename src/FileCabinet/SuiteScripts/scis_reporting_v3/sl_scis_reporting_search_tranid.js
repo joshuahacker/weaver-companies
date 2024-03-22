@@ -43,6 +43,8 @@ define(['N/search', 'N/log'], function(search, log) {
 				['item', 'noneof', '@NONE@'],
 				'AND',
 				['taxline', 'is', 'F'],
+				"AND",
+				["amount", "notequalto", "0"],
 				'AND',
 				['account', 'anyof', '817', '54', '936', '898'],
 				'AND',

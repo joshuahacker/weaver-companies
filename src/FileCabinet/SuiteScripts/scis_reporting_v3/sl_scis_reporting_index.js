@@ -195,7 +195,8 @@ define(['N/ui/serverWidget', 'N/log', 'N/file',
         var dctData = dctSummary[weekKey] || { discount: 0, cogs: 0, taxtotal: 0, tranidCount: 0 };
 
         // Calculate financial metrics
-        var totalRevenue = parseFloat(result.grossamount) - parseFloat(dctData.taxtotal);
+        var totalRevenue = parseFloat(result.grossamount)
+        var posTotal = parseFloat(result.grossamount) + parseFloat(dctData.taxtotal);
         var netRevenue = totalRevenue - parseFloat(dctData.discount);
         var netMargin = netRevenue - parseFloat(dctData.cogs);
         var cogsPercentage = totalRevenue > 0 ? (parseFloat(dctData.cogs) / totalRevenue) * 100 : 0;
@@ -204,9 +205,9 @@ define(['N/ui/serverWidget', 'N/log', 'N/file',
   tableRows += '<tr>' +
             '<td>' + weekKey + '</td>' +
             '<td>' + dctData.tranidCount + '</td>' + // Use the aggregated transaction count
-            '<td>' + parseFloat(result.grossamount).toFixed(2) + '</td>' +
+            '<td>' + posTotal.toFixed(2) + '</td>' +
             '<td>' + parseFloat(dctData.taxtotal).toFixed(2) + '</td>' +
-            '<td>' + totalRevenue.toFixed(2) + '</td>' +
+            '<td>' + totalRevenue.toFixed(2) + '</td>' + // Total Revenue Column
             '<td>' + parseFloat(dctData.discount).toFixed(2) + '</td>' +
             '<td>' + netRevenue.toFixed(2) + '</td>' +
             '<td>' + parseFloat(dctData.cogs).toFixed(2) + '</td>' +
@@ -246,7 +247,8 @@ define(['N/ui/serverWidget', 'N/log', 'N/file',
                         }
                     }
 
-                    var totalRevenue = parseFloat(grossAmount) - parseFloat(taxTotal);
+                    var totalRevenue = parseFloat(grossAmount);
+                    var posTotal = parseFloat(grossAmount) + parseFloat(taxTotal);
                     var netRevenue = totalRevenue - parseFloat(discountTotal);
                     var netMargin = netRevenue - parseFloat(cogsTotal);
                     var cogsPercentage = totalRevenue > 0 ? (parseFloat(cogsTotal) / totalRevenue) * 100 : 0;
@@ -255,7 +257,7 @@ define(['N/ui/serverWidget', 'N/log', 'N/file',
                     tableRows += '<tr>' +
                         '<td>' + date + '</td>' +
                         '<td>' + result.tranid + '</td>' +
-                        '<td>' + parseFloat(grossAmount).toFixed(2) + '</td>' +
+                        '<td>' + posTotal.toFixed(2) + '</td>' +
                         '<td>' + parseFloat(taxTotal).toFixed(2) + '</td>' +
                         '<td>' + totalRevenue.toFixed(2) + '</td>' +
                         '<td>' + parseFloat(discountTotal).toFixed(2) + '</td>' +
@@ -284,15 +286,14 @@ define(['N/ui/serverWidget', 'N/log', 'N/file',
                 var date = gaSearchResults.date;
                 var dctSearchData = dctSummary[date] || { discount: '0', cogs: '0', taxtotal: '0' };
 
-
-                var totalRevenue = parseFloat(gaSearchResults.grossamount) - parseFloat(dctSearchData.taxtotal);
+                var totalRevenue = gaSearchResults.grossamount.toString()
+                var posTotal = parseFloat(gaSearchResults.grossamount) + parseFloat(dctSearchData.taxtotal);
                 var netRevenue = totalRevenue - parseFloat(dctSearchData.discount);
                 var netMargin = netRevenue - parseFloat(dctSearchData.cogs);
                 var cogsPercentage = totalRevenue > 0 ? (parseFloat(dctSearchData.cogs) / totalRevenue) * 100 : 0;
                 var netMarginPercentage = (netMargin / totalRevenue) * 100;
 
                 
-                var grossAmount = gaSearchResults.grossamount.toString()
                 var taxTotal = dctSearchData.taxtotal.toString()
                 var discountTotal = dctSearchData.discount.toString()
                 var cogsTotal = dctSearchData.cogs.toString()
@@ -300,9 +301,9 @@ define(['N/ui/serverWidget', 'N/log', 'N/file',
                tableRows += '<tr>' +
                         '<td>' + date + '</td>' +
                         '<td>' + gaSearchResults.tranid + '</td>' +
-                        '<td>' + grossAmount + '</td>' +
+                        '<td>' + posTotal.toFixed(2) + '</td>' +
                         '<td>' + taxTotal + '</td>' +
-                        '<td>' + totalRevenue.toFixed(2) + '</td>' +
+                        '<td>' + totalRevenue + '</td>' +
                         '<td>' + discountTotal + '</td>' +
                         '<td>' + netRevenue.toFixed(2) + '</td>' +
                         '<td>' + cogsTotal + '</td>' +
