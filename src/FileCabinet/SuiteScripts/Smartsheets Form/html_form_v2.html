@@ -1,0 +1,203 @@
+
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Netsuite IT Request Form</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <style>
+      html, body {
+      min-height: 100%;
+      }
+      body, div, form, input, select, p { 
+      padding: 0;
+      margin: 0;
+      outline: none;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 16px;
+      color: #0c0b0b;
+      }
+      body {
+      background: url("/uploads/media/default/0001/01/b5edc1bad4dc8c20291c8394527cb2c5b43ee13c.jpeg") no-repeat center;
+      background-size: cover;
+      }
+      h1, h2 {
+      text-transform: uppercase;
+      font-weight: 400;
+      }
+      h2 {
+      margin: 0 0 0 8px;
+      }
+
+ /* Create three unequal columns that floats next to each other */
+    .column {
+    float: left;
+    padding: 10px;
+    }
+
+    /* Left and right column */
+    .column.side {
+    width: 25%;
+    }
+
+/* Middle column */
+.column.middle {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%; 
+      font-size: 11px;
+      padding: 50px;
+      background: rgba(231, 222, 222, 0.5); 
+}
+        /* Clear floats after the columns */
+        .row::after {
+        content: "";
+        display: table;
+        clear: both;
+        }
+
+      form {
+      background: rgba(223, 220, 220, 0.7); 
+      }
+      .title {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      }
+      .info {
+      display: flex;
+      flex-direction: column;
+      }
+      input, select {
+      padding: 5px;
+      margin-bottom: 30px;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #eee;
+      }
+      input::placeholder {
+      color: #030202;
+      }
+      option:focus {
+      border: none;
+      }
+      option {
+      background: black; 
+      border: none;
+      }
+      .checkbox input {
+      margin: 0 10px 0 40px;
+      vertical-align: middle;
+padding: 10px;
+      }
+
+      .checkbox a {
+      color: #26a9e0;
+      display: inline-block;
+    margin-right: 15px;
+      }
+      .checkbox a:hover {
+      color: #85d6de; 
+      }
+
+      .btn-item, button {
+      padding: 10px 5px;
+      margin-top: 20px;
+      border-radius: 5px; 
+      border: none;
+      background: #26a9e0; 
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 400;
+      color: #fff;
+      }
+      .btn-item {
+      display: inline-block;
+      margin: 20px 5px 0;
+      }
+      button {
+      width: 100%;
+      }
+      button:hover, .btn-item:hover {
+      background: #85d6de;
+      }
+    
+      @media screen and (max-width: 600px) {
+      .column.side, .column.middle, html, body {
+      width: 100%;
+      }
+      input[type=text]:focus {
+  border: 3px solid #555;
+}
+       }
+    </style>
+  </head>
+  <body>
+    <div class="row">
+    <div class="column side">
+
+    </div>
+    <div class="column middle">
+        <form method="post" id="requestform" enctype="multipart/form-data" action="/app/site/hosting/scriptlet.nl?script=1320&deploy=1">
+        <div class="title">
+          <i class="fas fa-pencil-alt"></i> 
+          <h2>Netsuite IT Request Form</h2>
+        </div>
+        <div class="info">
+          <input class="email" id="email" type="email" name="email" placeholder="E-mail">
+          <input type="text" id="request" name="request" placeholder="Request">
+          <input type="text" id="description" name="description" placeholder="Description/Notes">
+          <input type="date" id="date" name="text" placeholder="Date">
+          <select id="department" name="department">
+            <option value="department_type">Department*</option>
+            <option value="Accounting & Finance">Accounting</option>
+            <option value="marketing">Marketing</option>
+            <option value="retail">Retail</option>
+            <option value="Operations">Operations</option>
+            <option value="Sales">Sales</option>
+            <option value="customer_service">Customer Service</option>
+          </select>
+           <label for="attachment">Attachment:</label>
+           <input type="file" id="attachment" name="attachment">
+        </div>
+        <div class="checkbox">
+            <input type="checkbox" id="lowPriority" name="priority" value="Low">Low Priority
+            <input type="checkbox" id="mediumPriority" name="priority" value="Medium">Medium Priority
+            <input type="checkbox" id="highPriority" name="priority" value="High">High Priority
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+      </div>
+    <div class="column side">
+
+        </div>
+    </div>
+      
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var form = document.querySelector("form");
+        if (form) {
+            form.addEventListener("submit", function(event) {
+                // Collect checked priorities
+                var priorities = document.querySelectorAll('input[name="priority"]:checked');
+                var selectedPriorities = Array.from(priorities).map(function(el) {
+                    return el.value;
+                }).join(',');  // Convert array to comma-separated string
+
+                // Add the selectedPriorities as a hidden input field
+                var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "selectedPriorities";
+                input.value = selectedPriorities;
+                form.appendChild(input);
+            });
+        }
+    });
+</script>
+  </body>
+</html>
