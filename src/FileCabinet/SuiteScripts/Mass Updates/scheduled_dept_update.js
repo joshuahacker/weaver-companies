@@ -4,8 +4,7 @@
  */
 define(['N/record', 'N/search', 'N/log'], function (record, search, log) {
 	function execute(context) {
-		var savedSearchId = 'customsearch_department_update';
-		var newDepartmentId = '11';
+		var savedSearchId = 'customsearch_landed_cost';
 
 		var mySavedSearch = search.load({ id: savedSearchId });
 		var processResult = mySavedSearch.run().getRange({
@@ -16,18 +15,18 @@ define(['N/record', 'N/search', 'N/log'], function (record, search, log) {
 		processResult.forEach(function (result) {
 			try {
 				var transactionRecord = record.load({
-					type: result.recordType,
+					type: 'itemreceipt',
 					id: result.id,
 					isDynamic: false
 				});
 
 				transactionRecord.setValue({
-					fieldId: 'department',
-					value: newDepartmentId
+					fieldId: 'custbody_islandedcostapplied',
+					value: true
 				});
 				transactionRecord.save();
 
-				log.audit({ title: 'updated: ', details: result.id });
+				log.audit({ title: 'Landed cost applied', details: 'Transaction ' + result.id });
 			} catch (error) {
 				log.error({
 					title: 'Error updating transaction ' + result.id,
